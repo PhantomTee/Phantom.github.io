@@ -3,36 +3,40 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const LINKS = [
+const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/graph', label: 'Org Graph' },
+  { href: '#features', label: 'Features' },
+  { href: '#manifesto', label: 'About' },
 ]
 
 export function NavBar() {
   const path = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50">
+      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-            <span className="text-white font-black text-xs">A</span>
-          </div>
-          <span className="font-bold text-white tracking-tight">Arbiter</span>
-          <span className="text-[10px] text-cyan-400 font-semibold px-1.5 py-0.5 rounded bg-cyan-400/10 border border-cyan-400/20">
-            Arbitrum Stylus
-          </span>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="4" y="4" width="8" height="8" rx="1" fill="white" opacity="0.9"/>
+            <rect x="16" y="4" width="8" height="8" rx="1" fill="white" opacity="0.5"/>
+            <rect x="4" y="16" width="8" height="8" rx="1" fill="white" opacity="0.5"/>
+            <rect x="16" y="16" width="8" height="8" rx="1" fill="#4ade80" opacity="0.9"/>
+          </svg>
+          <span className="font-bold text-white tracking-tight text-lg">Anita</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          {LINKS.map(l => (
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map(l => (
             <Link
               key={l.href}
               href={l.href}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`text-sm transition-colors ${
                 path.startsWith(l.href)
-                  ? 'bg-gray-800 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                  ? 'text-white'
+                  : 'text-gray-500 hover:text-gray-200'
               }`}
             >
               {l.label}
@@ -40,10 +44,10 @@ export function NavBar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs text-gray-400">Demo mode</span>
-        </div>
+        {/* CTA */}
+        <button className="text-sm font-medium text-white border border-white/20 rounded-lg px-4 py-2 hover:border-white/40 hover:bg-white/5 transition-all">
+          Connect Wallet
+        </button>
       </div>
     </header>
   )

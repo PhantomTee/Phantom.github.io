@@ -26,7 +26,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Workforce Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">
-            {activeCount} active agents on Arbitrum
+            {activeCount} active Anita agents on Arbitrum
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full px-3 py-1.5">

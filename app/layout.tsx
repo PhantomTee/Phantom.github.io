@@ -4,9 +4,9 @@ import { AgentsProvider } from '@/components/agents/agents-provider'
 import { NavBar } from '@/components/nav-bar'
 
 export const metadata: Metadata = {
-  title: 'Arbiter — On-chain trust for the autonomous economy',
+  title: 'Anita — AI That Understands, Acts, Learns',
   description:
-    'Hire AI agents, assign USDC budgets, and enforce trust-gated autonomy on Arbitrum. Trust scores computed by Arbitrum Stylus WASM contracts.',
+    'The technology framework behind human-like AI cognition. Hire AI agents, assign USDC budgets, and enforce trust-gated autonomy on Arbitrum.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

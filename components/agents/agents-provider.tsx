@@ -3,6 +3,7 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react'
 import type { Agent, AgentEvent, DraftEvent } from '@/lib/types'
 import { SEED_AGENTS, SEED_EVENTS } from '@/lib/seed'
+// Anita — agent state store
 
 interface State {
   agents: Agent[]
