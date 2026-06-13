@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 /* ── Ecosystem ──────────────────────────────────────────────────── */
 const ECOSYSTEM = ['Arbitrum One', 'Arbitrum Sepolia', 'Stylus SDK', 'USDC', 'wagmi', 'viem', 'Rust WASM']
@@ -74,22 +77,22 @@ export default function LandingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden">
-        {/* Green glow orb */}
+        {/* Green glow orb — desktop only */}
         <div
-          className="pointer-events-none absolute right-0 top-0 w-[55%] h-full"
+          className="pointer-events-none hidden lg:block absolute right-0 top-0 w-[55%] h-full"
           style={{
             background: 'radial-gradient(ellipse 60% 70% at 75% 40%, #052e1644 0%, #0a0a0a00 70%)',
           }}
         />
         <div
-          className="pointer-events-none absolute right-[5%] top-[8%] w-[380px] h-[480px] rounded-full"
+          className="pointer-events-none hidden lg:block absolute right-[5%] top-[8%] w-[380px] h-[480px] rounded-full"
           style={{
             background: 'radial-gradient(ellipse 80% 90% at 50% 40%, #15803d55 0%, #14532d22 40%, transparent 70%)',
             filter: 'blur(1px)',
           }}
         />
         <div
-          className="pointer-events-none absolute right-[8%] top-[12%] w-[320px] h-[420px]"
+          className="pointer-events-none hidden lg:block absolute right-[8%] top-[12%] w-[320px] h-[420px]"
           style={{
             background: 'radial-gradient(ellipse 55% 65% at 50% 45%, #166534aa 0%, #15803d44 30%, transparent 65%)',
             borderRadius: '45% 55% 60% 40% / 40% 50% 50% 60%',
@@ -98,31 +101,51 @@ export default function LandingPage() {
         />
 
         <div className="relative max-w-7xl mx-auto px-6">
-          <div className="max-w-[58%]">
+          <div className="max-w-full lg:max-w-[58%]">
             {/* Eyebrow */}
-            <div className="flex items-center gap-2 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-2 mb-8"
+            >
               <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
               <span className="text-xs text-gray-500 uppercase tracking-widest">
                 Arbitrum Open House Hackathon 2025
               </span>
-            </div>
+            </motion.div>
 
             {/* Headline */}
-            <h1 className="text-[clamp(2.8rem,6vw,5rem)] font-black leading-[1.0] tracking-tight text-white mb-6 uppercase">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[clamp(2.8rem,6vw,5rem)] font-black leading-[1.0] tracking-tight text-white mb-6 uppercase"
+            >
               HIRE AGENTS.<br />
               SCORE TRUST<br />
               <span className="text-green-400">ON-CHAIN.</span>
-            </h1>
+            </motion.h1>
 
             {/* Sub */}
-            <p className="text-gray-400 text-lg max-w-lg leading-relaxed mb-10">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-gray-400 text-lg max-w-lg leading-relaxed mb-10"
+            >
               Anita is an AI worker operating system on Arbitrum. Assign USDC budgets,
               enforce spending guardrails, and let a Stylus Rust contract compute every
               agent&rsquo;s trust score — deterministically, on-chain, forever.
-            </p>
+            </motion.p>
 
             {/* CTAs */}
-            <div className="flex items-center gap-4 flex-wrap">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex items-center gap-4 flex-wrap"
+            >
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 bg-green-400 hover:bg-green-300 text-black font-semibold text-sm px-6 py-3 rounded-lg transition-colors"
@@ -138,7 +161,7 @@ export default function LandingPage() {
               >
                 View org graph
               </Link>
-            </div>
+            </motion.div>
           </div>
 
           {/* Ecosystem strip */}
@@ -159,14 +182,21 @@ export default function LandingPage() {
       <section className="border-t border-white/5 bg-[#0d0d0d]">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {STATS.map(s => (
-              <div key={s.value} className="flex flex-col gap-2">
+            {STATS.map((s, i) => (
+              <motion.div
+                key={s.value}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="flex flex-col gap-2"
+              >
                 <span className="text-[clamp(2.5rem,5vw,3.5rem)] font-black text-green-400 leading-none">
                   {s.value}
                 </span>
                 <span className="text-white font-semibold text-lg">{s.label}</span>
                 <span className="text-gray-500 text-sm">{s.sub}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -189,9 +219,13 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {FEATURES.map(f => (
-              <div
+            {FEATURES.map((f, i) => (
+              <motion.div
                 key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
                 className="group rounded-2xl border border-white/5 bg-[#111111] hover:border-white/10 hover:bg-[#141414] p-6 transition-all"
               >
                 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-green-400 group-hover:bg-green-400/10 transition-all mb-5">
@@ -199,7 +233,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-semibold text-white mb-2">{f.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

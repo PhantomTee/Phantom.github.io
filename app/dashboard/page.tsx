@@ -1,12 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { useAgents } from '@/components/agents/agents-provider'
 import { AgentRoster } from '@/components/agents/agent-roster'
 import { ActivityFeed } from '@/components/agents/activity-feed'
+import { CreateAgentDialog } from '@/components/agents/create-agent-dialog'
 import { computeTrust } from '@/lib/reputation'
 
 export default function DashboardPage() {
   const { agents, events, eventsFor } = useAgents()
+  const [showCreate, setShowCreate] = useState(false)
 
   const totalBudget = agents.reduce((s, a) => s + a.authorization.budgetUsdc, 0)
   const totalSpent = events
@@ -21,7 +24,7 @@ export default function DashboardPage() {
   const activeCount = agents.filter(a => a.status === 'active').length
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-6 py-8 pt-20">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">Workforce Dashboard</h1>
@@ -29,9 +32,20 @@ export default function DashboardPage() {
             {activeCount} active Anita agents on Arbitrum
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full px-3 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-          Trust verified · Arbitrum Stylus
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full px-3 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            Trust verified · Arbitrum Stylus
+          </div>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 bg-green-400 hover:bg-green-300 text-black font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Hire Agent
+          </button>
         </div>
       </div>
 
@@ -55,18 +69,20 @@ export default function DashboardPage() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
             Global Activity
           </h2>
-          <div className="rounded-xl border border-gray-800 bg-gray-900/40 p-4">
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
             <ActivityFeed events={events} limit={30} />
           </div>
         </div>
       </div>
+
+      <CreateAgentDialog open={showCreate} onClose={() => setShowCreate(false)} />
     </div>
   )
 }
 
 function StatCard({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="rounded-xl border border-gray-800 bg-gray-900/40 p-4">
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
       <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className="text-xl font-bold text-white">
         {value}
