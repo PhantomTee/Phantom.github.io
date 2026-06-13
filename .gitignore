@@ -1,0 +1,16 @@
+# Next.js
+.next/
+out/
+node_modules/
+
+# misc
+.DS_Store
+*.pem
+.env*
+!.env.example
+
+# debug
+npm-debug.log*
+
+# Rust
+contracts/target/
