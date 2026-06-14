@@ -41,12 +41,30 @@ interface AgentsContextValue {
   eventsFor: (agentId: string) => AgentEvent[]
   dispatch: React.Dispatch<Action>
   addEvent: (draft: DraftEvent) => void
+  createAgent: (agent: Agent) => void
 }
 
 const AgentsContext = createContext<AgentsContextValue | null>(null)
 
-function storageKey(address: string) {
+function lsKey(address: string) {
   return `anita:${address.toLowerCase()}`
+}
+
+function lsLoad(address: string): State {
+  try {
+    const raw = localStorage.getItem(lsKey(address))
+    if (raw) {
+      const { agents, events } = JSON.parse(raw) as State
+      return { agents: agents ?? [], events: events ?? [] }
+    }
+  } catch {}
+  return { agents: [], events: [] }
+}
+
+function lsSave(address: string, agents: Agent[], events: AgentEvent[]) {
+  try {
+    localStorage.setItem(lsKey(address), JSON.stringify({ agents, events }))
+  } catch {}
 }
 
 export function AgentsProvider({ children }: { children: ReactNode }) {
@@ -54,38 +72,47 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { agents: [], events: [] })
   const [isLoaded, setIsLoaded] = useState(false)
 
-  // Load from localStorage when wallet connects / changes
+  // Load from Neon on wallet connect; fall back to localStorage if DB not configured
   useEffect(() => {
     setIsLoaded(false)
     if (!address) {
-      // No wallet — load demo data so all pages work without connecting
       dispatch({ type: 'LOAD', agents: SEED_AGENTS, events: SEED_EVENTS })
       setIsLoaded(true)
       return
     }
-    try {
-      const raw = localStorage.getItem(storageKey(address))
-      if (raw) {
-        const { agents, events } = JSON.parse(raw) as State
-        dispatch({ type: 'LOAD', agents: agents ?? [], events: events ?? [] })
-      } else {
-        dispatch({ type: 'CLEAR' })
-      }
-    } catch {
-      dispatch({ type: 'CLEAR' })
-    }
-    setIsLoaded(true)
+    fetch(`/api/agents?address=${address}`)
+      .then(r => r.json())
+      .then(({ db, agents, events }: { db: boolean; agents: Agent[]; events: AgentEvent[] }) => {
+        if (db) {
+          dispatch({ type: 'LOAD', agents: agents ?? [], events: events ?? [] })
+        } else {
+          const stored = lsLoad(address)
+          dispatch({ type: 'LOAD', agents: stored.agents, events: stored.events })
+        }
+      })
+      .catch(() => {
+        const stored = lsLoad(address)
+        dispatch({ type: 'LOAD', agents: stored.agents, events: stored.events })
+      })
+      .finally(() => setIsLoaded(true))
   }, [address])
 
-  // Persist to localStorage on every state change
-  useEffect(() => {
-    if (!address) return
-    try {
-      localStorage.setItem(storageKey(address), JSON.stringify(state))
-    } catch {}
-  }, [address, state])
-
   const eventsFor = (agentId: string) => state.events.filter(e => e.agentId === agentId)
+
+  const createAgent = (agent: Agent) => {
+    dispatch({ type: 'ADD_AGENT', agent })
+    if (!address) return
+    fetch('/api/agents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, agent }),
+    })
+      .then(r => r.json())
+      .then(({ db }: { db: boolean }) => {
+        if (!db) lsSave(address, [...state.agents, agent], state.events)
+      })
+      .catch(() => lsSave(address, [...state.agents, agent], state.events))
+  }
 
   const addEvent = (draft: DraftEvent) => {
     const event: AgentEvent = {
@@ -94,10 +121,21 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       at:  new Date().toISOString(),
     }
     dispatch({ type: 'ADD_EVENT', event })
+    if (!address) return
+    fetch('/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, event }),
+    })
+      .then(r => r.json())
+      .then(({ db }: { db: boolean }) => {
+        if (!db) lsSave(address, state.agents, [event, ...state.events])
+      })
+      .catch(() => lsSave(address, state.agents, [event, ...state.events]))
   }
 
   return (
-    <AgentsContext.Provider value={{ ...state, isLoaded, eventsFor, dispatch, addEvent }}>
+    <AgentsContext.Provider value={{ ...state, isLoaded, eventsFor, dispatch, addEvent, createAgent }}>
       {children}
     </AgentsContext.Provider>
   )

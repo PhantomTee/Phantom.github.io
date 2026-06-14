@@ -21,7 +21,7 @@ interface CreateAgentDialogProps {
 }
 
 export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
-  const { dispatch } = useAgents()
+  const { createAgent, addEvent } = useAgents()
 
   const [name,       setName]       = useState('')
   const [model,      setModel]      = useState(MODELS[0].id)
@@ -37,21 +37,13 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
   useEffect(() => {
     if (!isConfirmed || !pendingAgent) return
-    dispatch({
-      type: 'ADD_AGENT',
-      agent: { ...pendingAgent, onChainScore: 79 },
-    })
-    dispatch({
-      type: 'ADD_EVENT',
-      event: {
-        id:      `${pendingAgent.id}-authorized`,
-        agentId: pendingAgent.id,
-        kind:    'authorized',
-        label:   `${pendingAgent.name} authorized — budget set on Arbitrum`,
-        at:      new Date().toISOString(),
-        txHash,
-        trustDelta: 0,
-      },
+    createAgent({ ...pendingAgent, onChainScore: 79 })
+    addEvent({
+      agentId: pendingAgent.id,
+      kind:    'authorized',
+      label:   `${pendingAgent.name} authorized — budget set on Arbitrum`,
+      txHash,
+      trustDelta: 0,
     })
     setPendingAgent(null)
     reset()
@@ -106,17 +98,12 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
         args:         [agentIdToBytes32(id), BigInt(Math.round(budgetNum * 100))],
       })
     } else {
-      dispatch({ type: 'ADD_AGENT', agent })
-      dispatch({
-        type: 'ADD_EVENT',
-        event: {
-          id:      `${id}-authorized`,
-          agentId: id,
-          kind:    'authorized',
-          label:   `${agent.name} authorized with $${budgetNum} USDC budget (local only)`,
-          at:      new Date().toISOString(),
-          trustDelta: 0,
-        },
+      createAgent(agent)
+      addEvent({
+        agentId: id,
+        kind:    'authorized',
+        label:   `${agent.name} authorized with $${budgetNum} USDC budget`,
+        trustDelta: 0,
       })
       handleClose()
     }
