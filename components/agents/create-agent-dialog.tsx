@@ -129,10 +129,10 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={!busy ? handleClose : undefined} />
-      <div className="relative w-full max-w-md border border-neutral-200 bg-white shadow-2xl">
+      <div className="relative w-full max-w-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-2xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-neutral-100">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-neutral-100 dark:border-neutral-800">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
@@ -155,7 +155,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Nexus"
               disabled={busy}
-              className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 placeholder-neutral-300 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
+              className="w-full bg-transparent border border-neutral-200 dark:border-neutral-700 px-4 py-3 font-mono text-[13px] text-neutral-900 dark:text-neutral-100 placeholder-neutral-300 dark:placeholder-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors disabled:opacity-40"
             />
           </div>
 
@@ -166,7 +166,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
               value={model}
               onChange={e => setModel(e.target.value)}
               disabled={busy}
-              className="w-full bg-white border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
+              className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 px-4 py-3 font-mono text-[13px] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors disabled:opacity-40"
             >
               {MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
             </select>
@@ -180,7 +180,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                 type="number" min="1" value={budget}
                 onChange={e => setBudget(e.target.value)}
                 disabled={busy}
-                className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
+                className="w-full bg-transparent border border-neutral-200 dark:border-neutral-700 px-4 py-3 font-mono text-[13px] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors disabled:opacity-40"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                 type="number" min="1" value={perTx}
                 onChange={e => setPerTx(e.target.value)}
                 disabled={busy}
-                className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
+                className="w-full bg-transparent border border-neutral-200 dark:border-neutral-700 px-4 py-3 font-mono text-[13px] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors disabled:opacity-40"
               />
             </div>
           </div>
@@ -205,8 +205,8 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                   disabled={busy}
                   className={`flex-1 py-3 font-mono text-[11px] tracking-[0.1em] border transition-all disabled:opacity-40 ${
                     network === n
-                      ? 'border-neutral-500 text-neutral-900'
-                      : 'border-neutral-100 text-neutral-400 hover:border-neutral-300'
+                      ? 'border-neutral-500 text-neutral-900 dark:text-white'
+                      : 'border-neutral-100 dark:border-neutral-700 text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-500'
                   }`}
                 >
                   {n === 'arbitrum-one' ? 'Arbitrum One' : 'Arbitrum Sepolia'}
@@ -226,8 +226,8 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                   disabled={busy}
                   className={`text-left px-4 py-3 border font-mono text-[11px] transition-all disabled:opacity-40 ${
                     categories.includes(cat.id)
-                      ? 'border-neutral-500 text-neutral-900'
-                      : 'border-neutral-100 text-neutral-400 hover:border-neutral-300'
+                      ? 'border-neutral-500 text-neutral-900 dark:text-white'
+                      : 'border-neutral-100 dark:border-neutral-700 text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-500'
                   }`}
                 >
                   <p className="tracking-[0.06em]">{cat.label}</p>
@@ -263,13 +263,13 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
           <div className="flex gap-3 pt-2">
             <button
               type="button" onClick={handleClose} disabled={busy}
-              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-400 border border-neutral-100 hover:border-neutral-300 transition-all disabled:opacity-30"
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-400 border border-neutral-100 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-500 transition-all disabled:opacity-30"
             >
               Cancel
             </button>
             <button
               type="submit" disabled={busy}
-              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-900 border border-neutral-300 hover:border-neutral-600 transition-all disabled:opacity-30"
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-600 hover:border-neutral-600 dark:hover:border-neutral-400 transition-all disabled:opacity-30"
             >
               {busy ? 'Hiring…' : 'Hire Agent'}
             </button>

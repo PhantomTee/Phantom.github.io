@@ -44,7 +44,7 @@ export function AgentCard({ agent, events }: AgentCardProps) {
 
   return (
     <Link href={`/agents/${agent.id}`}>
-      <div className="group flex items-center gap-6 lg:gap-8 py-6 border-b border-neutral-100 hover:bg-neutral-50/50 transition-colors cursor-pointer">
+      <div className="group flex items-center gap-6 lg:gap-8 py-6 border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/50 transition-colors cursor-pointer">
 
         {/* Status dot + initials */}
         <div className="flex items-center gap-2 w-10 flex-shrink-0">
@@ -54,7 +54,7 @@ export function AgentCard({ agent, events }: AgentCardProps) {
 
         {/* Name + model */}
         <div className="w-32 flex-shrink-0 min-w-0">
-          <p className="font-mono text-[13px] text-neutral-800 tracking-[0.04em] truncate">{agent.name}</p>
+          <p className="font-mono text-[13px] text-neutral-800 dark:text-neutral-200 tracking-[0.04em] truncate">{agent.name}</p>
           <p className="font-mono text-[10px] text-neutral-300 tracking-[0.06em] mt-0.5 truncate">
             {agent.model.replace('groq/', '').replace('heurist/', '')}
           </p>
@@ -67,7 +67,7 @@ export function AgentCard({ agent, events }: AgentCardProps) {
 
         {/* Trust score + grade badge */}
         <div className="flex items-baseline gap-2 w-24 flex-shrink-0">
-          <span className="font-display font-light text-neutral-900 text-[1.6rem] leading-none">{displayScore}</span>
+          <span className="font-display font-light text-neutral-900 dark:text-white text-[1.6rem] leading-none">{displayScore}</span>
           <span
             className="font-mono text-[10px] tracking-[0.08em] px-1.5 py-0.5 border leading-none"
             style={{ color: gradeColor(scoreToGrade(displayScore)), borderColor: gradeColor(scoreToGrade(displayScore)) + '44' }}
@@ -88,7 +88,7 @@ export function AgentCard({ agent, events }: AgentCardProps) {
             <span>Budget</span>
             <span>${spent.toFixed(0)} / ${agent.authorization.budgetUsdc}</span>
           </div>
-          <div className="h-px w-full bg-neutral-100 relative">
+          <div className="h-px w-full bg-neutral-100 dark:bg-neutral-800 relative">
             <div
               className="absolute top-0 left-0 h-px transition-all"
               style={{ width: `${utilization * 100}%`, background: '#4ade80', opacity: 0.6 }}
@@ -98,8 +98,8 @@ export function AgentCard({ agent, events }: AgentCardProps) {
 
         {/* Activity */}
         <div className="hidden lg:flex items-center gap-6 font-mono text-[10px] text-neutral-300 flex-shrink-0">
-          <span><span className="text-neutral-600">{paidCount}</span> paid</span>
-          <span><span className="text-neutral-600">{taskCount}</span> tasks</span>
+          <span><span className="text-neutral-600 dark:text-neutral-400">{paidCount}</span> paid</span>
+          <span><span className="text-neutral-600 dark:text-neutral-400">{taskCount}</span> tasks</span>
         </div>
 
       </div>

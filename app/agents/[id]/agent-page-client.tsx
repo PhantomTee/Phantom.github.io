@@ -20,7 +20,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 const TIER_COLOR: Record<string, string> = {
   autonomous: 'text-green-600',
-  trusted:    'text-neutral-600',
+  trusted:    'text-neutral-600 dark:text-neutral-400',
   supervised: 'text-neutral-400',
 }
 
@@ -52,20 +52,20 @@ export function AgentPageClient({ id }: { id: string }) {
   const blockCount = events.filter(e => e.kind === 'limit_blocked').length
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 pt-24 pb-32 px-6 lg:px-14">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pt-24 pb-32 px-6 lg:px-14">
 
       {/* Back */}
       <div className="mb-10">
         <Link
           href="/dashboard"
-          className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase hover:text-neutral-700 transition-colors"
+          className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
         >
           ← Dashboard
         </Link>
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-8 mb-16 pb-16 border-b border-neutral-100">
+      <div className="flex items-start justify-between flex-wrap gap-8 mb-16 pb-16 border-b border-neutral-100 dark:border-neutral-800">
         <div>
           <div className="flex items-center gap-3 mb-5">
             <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
@@ -78,7 +78,7 @@ export function AgentPageClient({ id }: { id: string }) {
               <span className="font-mono text-[11px] tracking-[0.08em] text-neutral-400">{initials}</span>
             </div>
             <h1
-              className="font-display font-light text-neutral-900 leading-none tracking-tight"
+              className="font-display font-light text-neutral-900 dark:text-white leading-none tracking-tight"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
               {agent.name}
@@ -97,7 +97,7 @@ export function AgentPageClient({ id }: { id: string }) {
         <div className="flex flex-col items-end gap-2">
           <div className="flex items-baseline gap-3">
             <span
-              className="font-display font-light text-neutral-900 leading-none"
+              className="font-display font-light text-neutral-900 dark:text-white leading-none"
               style={{ fontSize: 'clamp(3.5rem, 7vw, 6rem)' }}
             >
               {displayScore}
@@ -132,7 +132,7 @@ export function AgentPageClient({ id }: { id: string }) {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 border border-neutral-100 mb-16">
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-neutral-100 dark:border-neutral-800 mb-16">
         <StatBox label="Payments"    value={String(paidCount)}  unit="success" />
         <StatBox label="Failures"    value={String(failCount)}  unit="events" />
         <StatBox label="Tasks"       value={String(taskCount)}  unit="completed" />
@@ -140,12 +140,12 @@ export function AgentPageClient({ id }: { id: string }) {
       </div>
 
       {/* Budget */}
-      <div className="mb-16 pb-16 border-b border-neutral-100">
+      <div className="mb-16 pb-16 border-b border-neutral-100 dark:border-neutral-800">
         <div className="flex justify-between font-mono text-[11px] text-neutral-400 tracking-[0.1em] mb-4">
           <span>Budget utilization</span>
           <span>${spent.toFixed(0)} / ${agent.authorization.budgetUsdc} USDC</span>
         </div>
-        <div className="h-px w-full bg-neutral-100 relative">
+        <div className="h-px w-full bg-neutral-100 dark:bg-neutral-800 relative">
           <div
             className="absolute top-0 left-0 h-px transition-all duration-500"
             style={{ width: `${utilization * 100}%`, background: '#4ade80', opacity: 0.7 }}
@@ -158,12 +158,12 @@ export function AgentPageClient({ id }: { id: string }) {
           const remaining = agent.authorization.budgetUsdc - spent
           const daysLeft = dailyBurn > 0 ? remaining / dailyBurn : null
           return (
-            <div className="flex flex-wrap gap-6 mt-4 font-mono text-[10px] text-neutral-300 tracking-[0.08em]">
-              <span>Burn rate: <span className="text-neutral-500">${dailyBurn.toFixed(2)}/day</span></span>
+            <div className="flex flex-wrap gap-6 mt-4 font-mono text-[10px] text-neutral-300 dark:text-neutral-600 tracking-[0.08em]">
+              <span>Burn rate: <span className="text-neutral-500 dark:text-neutral-400">${dailyBurn.toFixed(2)}/day</span></span>
               {daysLeft !== null && (
                 <span>
                   Est. runway:{' '}
-                  <span className={daysLeft < 7 ? 'text-amber-500' : 'text-neutral-500'}>
+                  <span className={daysLeft < 7 ? 'text-amber-500' : 'text-neutral-500 dark:text-neutral-400'}>
                     {daysLeft < 1 ? '<1 day' : `${Math.floor(daysLeft)}d`}
                   </span>
                 </span>
@@ -173,10 +173,10 @@ export function AgentPageClient({ id }: { id: string }) {
           )
         })()}
         <div className="flex flex-wrap gap-6 mt-4 font-mono text-[11px] text-neutral-400 tracking-[0.1em]">
-          <span>Per-tx limit: <span className="text-neutral-600">${agent.authorization.perTxLimitUsdc}</span></span>
-          <span>Expires: <span className="text-neutral-600">{new Date(agent.authorization.expiresAt).toLocaleDateString()}</span></span>
-          <span>Categories: <span className="text-neutral-600">{agent.authorization.categories.join(', ')}</span></span>
-          <span>Confidence: <span className="text-neutral-600">{trust.confidence}</span></span>
+          <span>Per-tx limit: <span className="text-neutral-600 dark:text-neutral-300">${agent.authorization.perTxLimitUsdc}</span></span>
+          <span>Expires: <span className="text-neutral-600 dark:text-neutral-300">{new Date(agent.authorization.expiresAt).toLocaleDateString()}</span></span>
+          <span>Categories: <span className="text-neutral-600 dark:text-neutral-300">{agent.authorization.categories.join(', ')}</span></span>
+          <span>Confidence: <span className="text-neutral-600 dark:text-neutral-300">{trust.confidence}</span></span>
         </div>
       </div>
 
@@ -187,7 +187,7 @@ export function AgentPageClient({ id }: { id: string }) {
         <div>
           <div className="flex items-center gap-4 mb-8">
             <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Activity Log</span>
-            <span className="font-mono text-[11px] text-neutral-300">{events.length}</span>
+            <span className="font-mono text-[11px] text-neutral-300 dark:text-neutral-600">{events.length}</span>
           </div>
           <ActivityFeed events={events} limit={50} />
         </div>
@@ -217,9 +217,9 @@ export function AgentPageClient({ id }: { id: string }) {
 
 function StatBox({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="px-8 py-8 border-r border-b border-neutral-100 last:border-r-0">
+    <div className="px-8 py-8 border-r border-b border-neutral-100 dark:border-neutral-800 last:border-r-0">
       <p className="font-mono text-[10px] tracking-[0.22em] text-neutral-400 uppercase mb-5">{label}</p>
-      <p className="font-display font-light text-neutral-900 leading-none" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)' }}>
+      <p className="font-display font-light text-neutral-900 dark:text-white leading-none" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)' }}>
         {value}
         {unit && <span className="font-mono text-[11px] text-neutral-400 ml-2">{unit}</span>}
       </p>

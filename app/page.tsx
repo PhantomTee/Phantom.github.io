@@ -118,7 +118,7 @@ export default function HomePage() {
           <div className="px-6 pt-10 pb-16">
             <SectionLabel text="AI Worker OS · Arbitrum Stylus" />
             <h1
-              className="font-display font-light text-neutral-900 leading-[0.94] tracking-tight mb-6 select-none"
+              className="font-display font-light text-neutral-900 dark:text-white leading-[0.94] tracking-tight mb-6 select-none"
               style={{ fontSize: 'clamp(4rem, 18vw, 7rem)' }}
             >
               Anita
@@ -127,10 +127,10 @@ export default function HomePage() {
               Hire AI agents as workforce members. Assign USDC budgets, enforce spend limits, and let on-chain reputation gate their autonomy.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/dashboard" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 border border-neutral-900 px-7 py-4 hover:bg-neutral-900 hover:text-white transition-all duration-200">
+              <Link href="/dashboard" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 dark:text-white border border-neutral-900 dark:border-white px-7 py-4 hover:bg-neutral-900 dark:hover:bg-white hover:text-white dark:hover:text-neutral-900 transition-all duration-200">
                 Open Dashboard
               </Link>
-              <Link href="/graph" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 px-7 py-4 hover:border-neutral-400 transition-all duration-200">
+              <Link href="/graph" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 dark:border-neutral-700 px-7 py-4 hover:border-neutral-400 dark:hover:border-neutral-500 transition-all duration-200">
                 Org Graph →
               </Link>
             </div>
@@ -148,7 +148,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-display font-light text-neutral-900 leading-[0.94] tracking-tight mb-8 select-none"
+              className="font-display font-light text-neutral-900 dark:text-white leading-[0.94] tracking-tight mb-8 select-none"
               style={{ fontSize: 'clamp(5.5rem, 13vw, 11rem)' }}
             >
               Anita
@@ -167,10 +167,10 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/dashboard" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 border border-neutral-900 px-8 py-4 hover:bg-neutral-900 hover:text-white transition-all duration-200">
+              <Link href="/dashboard" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 dark:text-white border border-neutral-900 dark:border-white px-8 py-4 hover:bg-neutral-900 dark:hover:bg-white hover:text-white dark:hover:text-neutral-900 transition-all duration-200">
                 Open Dashboard
               </Link>
-              <Link href="/graph" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 px-8 py-4 hover:border-neutral-400 transition-all duration-200">
+              <Link href="/graph" className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 dark:border-neutral-700 px-8 py-4 hover:border-neutral-400 dark:hover:border-neutral-500 transition-all duration-200">
                 Org Graph →
               </Link>
             </motion.div>
@@ -187,7 +187,7 @@ export default function HomePage() {
           <FadeUp>
             <SectionLabel text="The Problem" />
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
               Autonomous agents<br />have no accountability
@@ -206,7 +206,7 @@ export default function HomePage() {
                   <span className="font-mono text-[10px] text-neutral-300 mt-1 flex-shrink-0">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-[15px] text-neutral-600 leading-relaxed">
+                  <span className="text-[15px] text-neutral-600 dark:text-neutral-300 leading-relaxed">
                     {item}
                   </span>
                 </li>
@@ -226,7 +226,7 @@ export default function HomePage() {
           </FadeUp>
           <FadeUp delay={0.1}>
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight max-w-4xl"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight max-w-4xl"
               style={{ fontSize: 'clamp(2.4rem, 5vw, 4.5rem)' }}
             >
               On-chain reputation that any protocol can read. Trust as a public good.
@@ -234,7 +234,7 @@ export default function HomePage() {
           </FadeUp>
           <FadeUp delay={0.2} className="mt-10">
             <p className="text-[15px] text-neutral-500 leading-relaxed max-w-2xl">
-              The Anita trust engine is a Rust contract on Arbitrum Stylus. It stores per-agent payment counters on-chain and computes a weighted 0–100 score on every read. Any protocol can call <span className="text-neutral-800">getScore(agentId)</span> to gate access, price credit, or verify counterparties.
+              The Anita trust engine is a Rust contract on Arbitrum Stylus. It stores per-agent payment counters on-chain and computes a weighted 0–100 score on every read. Any protocol can call <span className="text-neutral-800 dark:text-neutral-200">getScore(agentId)</span> to gate access, price credit, or verify counterparties.
             </p>
           </FadeUp>
         </div>
@@ -244,15 +244,15 @@ export default function HomePage() {
 
       {/* ══ STATS ════════════════════════════════════════════════════ */}
       <section className="px-6 lg:px-14 py-20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 border border-neutral-100">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 border border-neutral-100 dark:border-neutral-800">
           {[
             { value: '4', label: 'Trust Factors', sub: 'Reliability · Discipline · Completion · Consistency' },
             { value: '3', label: 'Autonomy Tiers', sub: 'Supervised · Trusted · Autonomous' },
             { value: '~10×', label: 'Gas Savings', sub: 'Rust WASM vs equivalent Solidity' },
           ].map((s, i) => (
             <FadeUp key={i} delay={i * 0.08}>
-              <div className="px-8 py-10 border-b sm:border-b-0 sm:border-r border-neutral-100 last:border-r-0">
-                <p className="font-display font-light text-neutral-900 leading-none mb-3"
+              <div className="px-8 py-10 border-b sm:border-b-0 sm:border-r border-neutral-100 dark:border-neutral-800 last:border-r-0">
+                <p className="font-display font-light text-neutral-900 dark:text-white leading-none mb-3"
                    style={{ fontSize: 'clamp(2.8rem, 5vw, 4rem)' }}>
                   {s.value}
                 </p>
@@ -272,7 +272,7 @@ export default function HomePage() {
           <FadeUp>
             <SectionLabel text="How It Works" />
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight mb-16"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight mb-16"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
               Four steps to a trusted workforce
@@ -304,7 +304,7 @@ export default function HomePage() {
               <FadeUp key={i} delay={i * 0.08}>
                 <div className="bg-white dark:bg-neutral-950 px-8 py-10 h-full">
                   <p className="font-mono text-[11px] tracking-[0.26em] text-neutral-300 mb-6">{step.n}</p>
-                  <p className="font-display font-light text-neutral-900 text-2xl mb-4">{step.title}</p>
+                  <p className="font-display font-light text-neutral-900 dark:text-white text-2xl mb-4">{step.title}</p>
                   <p className="text-[15px] text-neutral-500 leading-relaxed">{step.body}</p>
                 </div>
               </FadeUp>
@@ -321,7 +321,7 @@ export default function HomePage() {
           <FadeUp>
             <SectionLabel text="The Trust Engine" />
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight mb-14"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight mb-14"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
               Four weighted factors.<br />Computed deterministically in Rust.
@@ -333,7 +333,7 @@ export default function HomePage() {
             <FadeUp delay={0.1}>
               <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-8 font-mono text-[12px] leading-7 text-neutral-500 dark:text-neutral-400">
                 <p className="text-neutral-300 mb-4 text-[10px] tracking-[0.2em] uppercase">trust_score.rs</p>
-                <p><span className="text-[#4169e1]">fn</span> <span className="text-neutral-800">compute_score</span>(counters: &amp;Counters) {'{'}  </p>
+                <p><span className="text-[#4169e1]">fn</span> <span className="text-neutral-800 dark:text-neutral-200">compute_score</span>(counters: &amp;Counters) {'{'}  </p>
                 <p className="ml-4"><span className="text-[#4169e1]">let</span> reliability  = successes / attempts;</p>
                 <p className="ml-4"><span className="text-[#4169e1]">let</span> discipline   = 1.0 - penalties;</p>
                 <p className="ml-4"><span className="text-[#4169e1]">let</span> completion   = tasks / max(payments, tasks);</p>
@@ -368,7 +368,7 @@ export default function HomePage() {
                       <span>{f.label}</span>
                       <span style={{ color: f.color }}>{f.weight}%</span>
                     </div>
-                    <div className="h-1 bg-neutral-100 mb-1.5">
+                    <div className="h-1 bg-neutral-100 dark:bg-neutral-800 mb-1.5">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${f.weight * 2.5}%` }}
@@ -383,7 +383,7 @@ export default function HomePage() {
                 ))}
 
                 {/* Grade scale */}
-                <div className="pt-4 border-t border-neutral-100">
+                <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
                   <p className="font-mono text-[10px] tracking-[0.18em] text-neutral-300 uppercase mb-3">Grade Scale</p>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -415,7 +415,7 @@ export default function HomePage() {
           <FadeUp>
             <SectionLabel text="Capabilities" />
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight mb-14"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight mb-14"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
               Everything you need to manage<br />an AI workforce
@@ -438,7 +438,7 @@ export default function HomePage() {
             ].map((c, i) => (
               <FadeUp key={i} delay={(i % 4) * 0.04}>
                 <div className="bg-white dark:bg-neutral-950 flex items-center justify-between px-6 py-5 gap-4">
-                  <span className="text-[15px] text-neutral-600">{c.label}</span>
+                  <span className="text-[15px] text-neutral-600 dark:text-neutral-300">{c.label}</span>
                   <span
                     className={`font-mono text-[9px] tracking-[0.18em] flex-shrink-0 px-2 py-0.5 border ${
                       c.status === 'LIVE'
@@ -458,14 +458,14 @@ export default function HomePage() {
       <Rule />
 
       {/* ══ THE WORKFORCE CTA ════════════════════════════════════════ */}
-      <section className="px-6 lg:px-14 py-24 lg:py-36 bg-neutral-50">
+      <section className="px-6 lg:px-14 py-24 lg:py-36 bg-neutral-50 dark:bg-neutral-900">
         <div className="max-w-7xl mx-auto text-center">
           <FadeUp>
             <SectionLabel text="The Workforce" />
           </FadeUp>
           <FadeUp delay={0.1}>
             <h2
-              className="font-display font-light text-neutral-900 leading-tight tracking-tight mb-8 mx-auto"
+              className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight mb-8 mx-auto"
               style={{ fontSize: 'clamp(2.6rem, 6vw, 5rem)', maxWidth: '16ch' }}
             >
               Your AI workforce awaits
@@ -480,13 +480,13 @@ export default function HomePage() {
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/dashboard"
-                className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 border border-neutral-900 px-10 py-5 hover:bg-neutral-900 hover:text-white transition-all duration-200"
+                className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 dark:text-white border border-neutral-900 dark:border-white px-10 py-5 hover:bg-neutral-900 dark:hover:bg-white hover:text-white dark:hover:text-neutral-900 transition-all duration-200"
               >
                 Hire Your First Agent
               </Link>
               <Link
                 href="/compare"
-                className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 px-10 py-5 hover:border-neutral-400 transition-all duration-200"
+                className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-400 border border-neutral-200 dark:border-neutral-700 px-10 py-5 hover:border-neutral-400 dark:hover:border-neutral-500 transition-all duration-200"
               >
                 Compare Agents
               </Link>
@@ -501,7 +501,7 @@ export default function HomePage() {
       <footer className="px-6 lg:px-14 py-12">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <p className="font-mono text-[11px] tracking-[0.18em] text-neutral-900 uppercase mb-1">Anita ✱</p>
+            <p className="font-mono text-[11px] tracking-[0.18em] text-neutral-900 dark:text-neutral-100 uppercase mb-1">Anita ✱</p>
             <p className="font-mono text-[10px] text-neutral-300 tracking-[0.1em]">
               Arbitrum Open House Hackathon 2026 · Arbitrum Sepolia
             </p>

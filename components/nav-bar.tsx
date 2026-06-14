@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Moon, Sun } from 'lucide-react'
 import { WalletButton } from './wallet-button'
 
 const NAV_LINKS = [
@@ -67,16 +68,16 @@ export function NavBar() {
 
         {/* Desktop right */}
         <div className="hidden md:flex items-center gap-5">
-          <button onClick={toggle} aria-label="Toggle dark mode" className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors text-[18px]">
-            {dark ? '○' : '●'}
+          <button onClick={toggle} aria-label="Toggle dark mode" className="text-neutral-400 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors">
+            {dark ? <Sun size={17} strokeWidth={1.5} /> : <Moon size={17} strokeWidth={1.5} />}
           </button>
           <WalletButton textMode />
         </div>
 
         {/* Mobile: wallet + dark toggle + hamburger */}
         <div className="flex md:hidden items-center gap-3">
-          <button onClick={toggle} aria-label="Toggle dark mode" className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors text-[16px]">
-            {dark ? '○' : '●'}
+          <button onClick={toggle} aria-label="Toggle dark mode" className="text-neutral-400 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors">
+            {dark ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
           </button>
           <WalletButton />
           <button

@@ -24,14 +24,14 @@ export default function DashboardPage() {
   // ── Not connected — show live demo network ───────────────────────
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-white text-neutral-900 pt-32 pb-32 px-6 lg:px-14">
+      <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pt-32 pb-32 px-6 lg:px-14">
         <div className="flex items-start justify-between mb-20">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
               <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Live Network</span>
             </div>
-            <h1 className="font-display font-light text-neutral-900 leading-[1.0] tracking-tight" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
+            <h1 className="font-display font-light text-neutral-900 dark:text-white leading-[1.0] tracking-tight" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
               Demo workforce
             </h1>
             <div className="flex items-center gap-3 mt-5">
@@ -51,13 +51,13 @@ export default function DashboardPage() {
   // ── Connected, no agents ─────────────────────────────────────────
   if (agents.length === 0) {
     return (
-      <div className="min-h-screen bg-white text-neutral-900 flex flex-col items-center justify-center px-6 pt-24">
+      <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col items-center justify-center px-6 pt-24">
         <div className="flex items-center gap-3 mb-8">
           <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
           <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Workforce</span>
         </div>
         <h1
-          className="font-display font-light text-neutral-900 text-center leading-tight tracking-tight mb-6"
+          className="font-display font-light text-neutral-900 dark:text-white text-center leading-tight tracking-tight mb-6"
           style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
         >
           No agents yet
@@ -67,7 +67,7 @@ export default function DashboardPage() {
         </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 border border-neutral-300 px-10 py-5 hover:border-neutral-600 transition-all duration-200"
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 px-10 py-5 hover:border-neutral-600 dark:hover:border-neutral-400 transition-all duration-200"
         >
           + Hire First Agent
         </button>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
 
   // ── Dashboard ────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white text-neutral-900 pt-32 pb-32 px-6 lg:px-14">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pt-32 pb-32 px-6 lg:px-14">
 
       {/* Header */}
       <div className="flex items-start justify-between mb-20">
@@ -91,7 +91,7 @@ export default function DashboardPage() {
             <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Workforce</span>
           </div>
           <h1
-            className="font-display font-light text-neutral-900 leading-[1.0] tracking-tight"
+            className="font-display font-light text-neutral-900 dark:text-white leading-[1.0] tracking-tight"
             style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
           >
             {activeCount} active agent{activeCount !== 1 ? 's' : ''}
@@ -105,14 +105,14 @@ export default function DashboardPage() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-500 border border-neutral-200 px-8 py-4 hover:border-neutral-400 hover:text-neutral-900 transition-all duration-200"
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700 px-8 py-4 hover:border-neutral-400 dark:hover:border-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all duration-200"
         >
           + Hire Agent
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 border border-neutral-100 mb-20">
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-neutral-100 dark:border-neutral-800 mb-20">
         <StatBox label="Active agents" value={String(activeCount)} />
         <StatBox label="Total agents"  value={String(agents.length)} />
         <StatBox label="Total budget"  value={`$${totalBudget}`} unit="USDC" />
@@ -120,16 +120,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Body */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border-t border-neutral-100">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border-t border-neutral-100 dark:border-neutral-800">
 
         {/* Agents */}
-        <div className="lg:border-r border-neutral-100 lg:pr-10">
-          <div className="flex items-center justify-between py-7 border-b border-neutral-100">
+        <div className="lg:border-r border-neutral-100 dark:border-neutral-800 lg:pr-10">
+          <div className="flex items-center justify-between py-7 border-b border-neutral-100 dark:border-neutral-800">
             <div className="flex items-center gap-4">
               <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Agents</span>
-              <span className="font-mono text-[11px] text-neutral-300">{agents.length}</span>
+              <span className="font-mono text-[11px] text-neutral-300 dark:text-neutral-600">{agents.length}</span>
             </div>
-            <div className="hidden lg:flex items-center gap-8 font-mono text-[10px] tracking-[0.16em] text-neutral-300 uppercase">
+            <div className="hidden lg:flex items-center gap-8 font-mono text-[10px] tracking-[0.16em] text-neutral-300 dark:text-neutral-600 uppercase">
               <span className="w-28">Model</span>
               <span className="w-24">Tier</span>
               <span className="w-20">Score</span>
@@ -142,11 +142,11 @@ export default function DashboardPage() {
 
         {/* Activity */}
         <div className="mt-8 lg:mt-0 lg:pl-10">
-          <div className="py-7 border-b border-neutral-100">
+          <div className="py-7 border-b border-neutral-100 dark:border-neutral-800">
             <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Activity Log</span>
           </div>
           {events.length === 0
-            ? <p className="font-mono text-[11px] text-neutral-300 py-8 tracking-[0.1em]">// no activity yet</p>
+            ? <p className="font-mono text-[11px] text-neutral-300 dark:text-neutral-600 py-8 tracking-[0.1em]">// no activity yet</p>
             : <ActivityFeed events={events} limit={30} />
           }
         </div>
@@ -160,9 +160,9 @@ export default function DashboardPage() {
 
 function StatBox({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="px-8 py-8 border-r border-b border-neutral-100 last:border-r-0">
+    <div className="px-8 py-8 border-r border-b border-neutral-100 dark:border-neutral-800 last:border-r-0">
       <p className="font-mono text-[10px] tracking-[0.22em] text-neutral-400 uppercase mb-5">{label}</p>
-      <p className="font-display font-light text-neutral-900 leading-none" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
+      <p className="font-display font-light text-neutral-900 dark:text-white leading-none" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
         {value}
         {unit && <span className="font-mono text-[12px] text-neutral-400 ml-2">{unit}</span>}
       </p>

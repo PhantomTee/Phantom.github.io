@@ -40,12 +40,12 @@ export function ActivityFeed({ events, limit = 20 }: ActivityFeedProps) {
       {visible.map(e => {
         const meta = KIND_META[e.kind] ?? { prefix: '>', color: 'text-neutral-400' }
         return (
-          <div key={e.id} className="flex items-start gap-3 py-4 border-b border-neutral-100">
+          <div key={e.id} className="flex items-start gap-3 py-4 border-b border-neutral-100 dark:border-neutral-800">
             <span className={`font-mono text-[11px] mt-0.5 flex-shrink-0 w-3 ${meta.color}`}>
               {meta.prefix}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-mono text-[11px] text-neutral-600 truncate tracking-[0.04em] leading-snug">
+              <p className="font-mono text-[11px] text-neutral-600 dark:text-neutral-300 truncate tracking-[0.04em] leading-snug">
                 {e.label}
               </p>
               <div className="flex items-center gap-3 mt-1.5">

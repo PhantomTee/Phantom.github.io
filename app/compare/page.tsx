@@ -32,14 +32,14 @@ function AgentColumn({ agent, events, accent }: { agent: Agent; events: AgentEve
   return (
     <div className="flex-1 min-w-0">
       {/* Agent header */}
-      <div className="mb-8 pb-8 border-b border-neutral-100">
+      <div className="mb-8 pb-8 border-b border-neutral-100 dark:border-neutral-800">
         <div className="flex items-center gap-2 mb-3">
           <span className="h-2 w-2 flex-shrink-0" style={{ backgroundColor: accent }} />
           <span className="font-mono text-[10px] tracking-[0.12em] text-neutral-400 uppercase truncate">
             {agent.model.replace('groq/', '').replace('heurist/', '')}
           </span>
         </div>
-        <p className="font-mono text-[15px] text-neutral-800 tracking-[0.04em] truncate">{agent.name}</p>
+        <p className="font-mono text-[15px] text-neutral-800 dark:text-neutral-200 tracking-[0.04em] truncate">{agent.name}</p>
         <p className="font-mono text-[10px] text-neutral-400 tracking-[0.1em] mt-1 uppercase">{tier.label}</p>
       </div>
 
@@ -63,7 +63,7 @@ function AgentColumn({ agent, events, accent }: { agent: Agent; events: AgentEve
                 <span>{label}</span>
                 <span>{weight} · <span style={{ color: accent }}>{pct}%</span></span>
               </div>
-              <div className="h-1 bg-neutral-100 relative">
+              <div className="h-1 bg-neutral-100 dark:bg-neutral-800 relative">
                 <div
                   className="absolute top-0 left-0 h-full transition-all duration-700"
                   style={{ width: `${pct}%`, backgroundColor: accent, opacity: 0.7 }}
@@ -75,12 +75,12 @@ function AgentColumn({ agent, events, accent }: { agent: Agent; events: AgentEve
       </div>
 
       {/* Budget */}
-      <div className="pt-6 border-t border-neutral-100">
+      <div className="pt-6 border-t border-neutral-100 dark:border-neutral-800">
         <div className="flex justify-between font-mono text-[10px] text-neutral-400 mb-2">
           <span>Budget</span>
           <span>${spent.toFixed(0)} / ${agent.authorization.budgetUsdc}</span>
         </div>
-        <div className="h-px w-full bg-neutral-100 relative">
+        <div className="h-px w-full bg-neutral-100 dark:bg-neutral-800 relative">
           <div
             className="absolute top-0 left-0 h-px"
             style={{ width: `${utilization * 100}%`, backgroundColor: accent, opacity: 0.55 }}
@@ -95,9 +95,9 @@ function AgentColumn({ agent, events, accent }: { agent: Agent; events: AgentEve
             ['Failures', events.filter(e => e.kind === 'payment_failed').length],
             ['Blocks',   events.filter(e => e.kind === 'limit_blocked').length],
           ].map(([label, val]) => (
-            <div key={String(label)} className="border border-neutral-100 px-3 py-3">
+            <div key={String(label)} className="border border-neutral-100 dark:border-neutral-800 px-3 py-3">
               <p className="font-mono text-[9px] tracking-[0.16em] text-neutral-400 uppercase mb-1">{label}</p>
-              <p className="font-mono text-[15px] text-neutral-700">{val}</p>
+              <p className="font-mono text-[15px] text-neutral-700 dark:text-neutral-300">{val}</p>
             </div>
           ))}
         </div>
@@ -123,13 +123,13 @@ export default function ComparePage() {
   const comparing = selected.map(id => agents.find(a => a.id === id)).filter(Boolean) as Agent[]
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 pt-24 pb-32 px-6 lg:px-14">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pt-24 pb-32 px-6 lg:px-14">
 
       {/* Back */}
       <div className="mb-10">
         <Link
           href="/dashboard"
-          className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase hover:text-neutral-700 transition-colors"
+          className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
         >
           ← Dashboard
         </Link>
@@ -142,7 +142,7 @@ export default function ComparePage() {
           <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Compare</span>
         </div>
         <h1
-          className="font-display font-light text-neutral-900 leading-tight tracking-tight"
+          className="font-display font-light text-neutral-900 dark:text-white leading-tight tracking-tight"
           style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
         >
           Agent Comparison
@@ -153,7 +153,7 @@ export default function ComparePage() {
       </div>
 
       {agents.length === 0 && (
-        <p className="font-mono text-[11px] text-neutral-300 tracking-[0.1em]">
+        <p className="font-mono text-[11px] text-neutral-300 dark:text-neutral-600 tracking-[0.1em]">
           // No agents yet — hire from the dashboard first.
         </p>
       )}
@@ -186,7 +186,7 @@ export default function ComparePage() {
 
       {/* Comparison columns */}
       {comparing.length === 0 && agents.length > 0 && (
-        <p className="font-mono text-[11px] text-neutral-300 tracking-[0.1em]">
+        <p className="font-mono text-[11px] text-neutral-300 dark:text-neutral-600 tracking-[0.1em]">
           // Select agents above to compare
         </p>
       )}
