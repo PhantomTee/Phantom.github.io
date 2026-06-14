@@ -3,6 +3,7 @@
 import { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 import type { Agent, AgentEvent, DraftEvent } from '@/lib/types'
+import { SEED_AGENTS, SEED_EVENTS } from '@/lib/seed'
 
 interface State {
   agents: Agent[]
@@ -57,7 +58,8 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setIsLoaded(false)
     if (!address) {
-      dispatch({ type: 'CLEAR' })
+      // No wallet — load demo data so all pages work without connecting
+      dispatch({ type: 'LOAD', agents: SEED_AGENTS, events: SEED_EVENTS })
       setIsLoaded(true)
       return
     }
