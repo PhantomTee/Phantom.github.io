@@ -25,9 +25,17 @@ const TIER_COLOR: Record<string, string> = {
 }
 
 export function AgentPageClient({ id }: { id: string }) {
-  const { agents, eventsFor } = useAgents()
+  const { agents, eventsFor, isLoaded } = useAgents()
   const agent = agents.find(a => a.id === id)
   const onChain = useOnChainScore(id)
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center">
+        <span className="font-mono text-[11px] tracking-[0.18em] text-neutral-300 dark:text-neutral-600 uppercase animate-pulse">Loading…</span>
+      </div>
+    )
+  }
 
   if (!agent) return notFound()
 

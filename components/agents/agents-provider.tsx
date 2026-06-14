@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 import type { Agent, AgentEvent, DraftEvent } from '@/lib/types'
 
@@ -36,6 +36,7 @@ function reducer(state: State, action: Action): State {
 interface AgentsContextValue {
   agents: Agent[]
   events: AgentEvent[]
+  isLoaded: boolean
   eventsFor: (agentId: string) => AgentEvent[]
   dispatch: React.Dispatch<Action>
   addEvent: (draft: DraftEvent) => void
@@ -50,11 +51,14 @@ function storageKey(address: string) {
 export function AgentsProvider({ children }: { children: ReactNode }) {
   const { address } = useAccount()
   const [state, dispatch] = useReducer(reducer, { agents: [], events: [] })
+  const [isLoaded, setIsLoaded] = useState(false)
 
   // Load from localStorage when wallet connects / changes
   useEffect(() => {
+    setIsLoaded(false)
     if (!address) {
       dispatch({ type: 'CLEAR' })
+      setIsLoaded(true)
       return
     }
     try {
@@ -68,6 +72,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
     } catch {
       dispatch({ type: 'CLEAR' })
     }
+    setIsLoaded(true)
   }, [address])
 
   // Persist to localStorage on every state change
@@ -90,7 +95,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AgentsContext.Provider value={{ ...state, eventsFor, dispatch, addEvent }}>
+    <AgentsContext.Provider value={{ ...state, isLoaded, eventsFor, dispatch, addEvent }}>
       {children}
     </AgentsContext.Provider>
   )
