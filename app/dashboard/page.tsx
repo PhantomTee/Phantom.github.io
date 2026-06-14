@@ -7,6 +7,7 @@ import { AgentRoster } from '@/components/agents/agent-roster'
 import { ActivityFeed } from '@/components/agents/activity-feed'
 import { CreateAgentDialog } from '@/components/agents/create-agent-dialog'
 import { WalletButton } from '@/components/wallet-button'
+import { DemoRoster } from '@/components/agents/demo-roster'
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount()
@@ -19,24 +20,29 @@ export default function DashboardPage() {
     .reduce((s, e) => s + (e.amountUsdc ?? 0), 0)
   const activeCount = agents.filter(a => a.status === 'active').length
 
-  // ── Not connected ────────────────────────────────────────────────
+  // ── Not connected — show live demo network ───────────────────────
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-[#030a12] text-white flex flex-col items-center justify-center px-6 pt-24">
-        <div className="flex items-center gap-3 mb-8">
-          <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
-          <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Workforce</span>
+      <div className="min-h-screen bg-[#030a12] text-white pt-32 pb-32 px-6 lg:px-14">
+        <div className="flex items-start justify-between mb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
+              <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Live Network</span>
+            </div>
+            <h1 className="font-display font-light text-white leading-[1.0] tracking-tight" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
+              Demo workforce
+            </h1>
+            <div className="flex items-center gap-3 mt-5">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-400/70 flex-shrink-0" />
+              <span className="font-mono text-[11px] tracking-[0.18em] text-white/25 uppercase">
+                Scores live from Arbitrum Sepolia · Connect to manage your own
+              </span>
+            </div>
+          </div>
+          <WalletButton />
         </div>
-        <h1
-          className="font-display font-light text-white text-center leading-tight tracking-tight mb-6"
-          style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
-        >
-          Connect your wallet
-        </h1>
-        <p className="font-mono text-[13px] text-white/30 tracking-[0.08em] text-center max-w-sm mb-10 leading-relaxed">
-          Your agents are scoped to your wallet. Connect to see your workforce.
-        </p>
-        <WalletButton />
+        <DemoRoster />
       </div>
     )
   }
