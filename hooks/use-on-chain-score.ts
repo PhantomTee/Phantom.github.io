@@ -2,27 +2,27 @@
 
 import { useReadContract } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
+import { keccak256, toBytes } from 'viem'
 import { STYLUS_CONTRACT_ADDRESS, TRUST_ENGINE_ABI } from '@/lib/arbitrum'
-import { toHex, padHex } from 'viem'
+
+export function agentIdToBytes32(agentId: string): `0x${string}` {
+  return keccak256(toBytes(agentId))
+}
 
 export function useOnChainScore(agentId: string) {
-  const agentIdBytes32 = padHex(toHex(agentId), { size: 32 })
-
   const { data, isLoading, isError } = useReadContract({
     address: STYLUS_CONTRACT_ADDRESS,
     abi: TRUST_ENGINE_ABI,
     functionName: 'getScore',
-    args: [agentIdBytes32 as `0x${string}`],
+    args: [agentIdToBytes32(agentId)],
     chainId: arbitrumSepolia.id,
-    query: { enabled: !!STYLUS_CONTRACT_ADDRESS },
+    query: { enabled: !!STYLUS_CONTRACT_ADDRESS, refetchInterval: 10_000 },
   })
 
-  if (!STYLUS_CONTRACT_ADDRESS) {
-    return { score: null, status: 'no-contract' as const }
-  }
-  if (isLoading) return { score: null, status: 'loading' as const }
-  if (isError || data === undefined) return { score: null, status: 'error' as const }
+  if (!STYLUS_CONTRACT_ADDRESS) return { score: null, status: 'no-contract' as const }
+  if (isLoading)                 return { score: null, status: 'loading'     as const }
+  if (isError || data == null)   return { score: null, status: 'error'       as const }
 
-  // Contract returns 0–1000 fixed-point; divide by 10 to get 0–100
+  // Contract returns 0–1000 fixed-point; divide by 10 → 0–100
   return { score: Math.round(Number(data) / 10), status: 'live' as const }
 }

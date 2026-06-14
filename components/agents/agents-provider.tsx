@@ -1,9 +1,8 @@
 'use client'
 
-import { createContext, useContext, useReducer, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { useAccount } from 'wagmi'
 import type { Agent, AgentEvent, DraftEvent } from '@/lib/types'
-import { SEED_AGENTS, SEED_EVENTS } from '@/lib/seed'
-// Anita — agent state store
 
 interface State {
   agents: Agent[]
@@ -11,10 +10,11 @@ interface State {
 }
 
 type Action =
-  | { type: 'ADD_AGENT'; agent: Agent }
-  | { type: 'ADD_EVENT'; event: AgentEvent }
+  | { type: 'ADD_AGENT';    agent: Agent }
+  | { type: 'ADD_EVENT';    event: AgentEvent }
   | { type: 'UPDATE_AGENT'; id: string; patch: Partial<Agent> }
-  | { type: 'RESET' }
+  | { type: 'LOAD';         agents: Agent[]; events: AgentEvent[] }
+  | { type: 'CLEAR' }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -23,14 +23,11 @@ function reducer(state: State, action: Action): State {
     case 'ADD_EVENT':
       return { ...state, events: [action.event, ...state.events] }
     case 'UPDATE_AGENT':
-      return {
-        ...state,
-        agents: state.agents.map(a =>
-          a.id === action.id ? { ...a, ...action.patch } : a
-        ),
-      }
-    case 'RESET':
-      return { agents: SEED_AGENTS, events: SEED_EVENTS }
+      return { ...state, agents: state.agents.map(a => a.id === action.id ? { ...a, ...action.patch } : a) }
+    case 'LOAD':
+      return { agents: action.agents, events: action.events }
+    case 'CLEAR':
+      return { agents: [], events: [] }
     default:
       return state
   }
@@ -46,20 +43,48 @@ interface AgentsContextValue {
 
 const AgentsContext = createContext<AgentsContextValue | null>(null)
 
-export function AgentsProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, {
-    agents: SEED_AGENTS,
-    events: SEED_EVENTS,
-  })
+function storageKey(address: string) {
+  return `anita:${address.toLowerCase()}`
+}
 
-  const eventsFor = (agentId: string) =>
-    state.events.filter(e => e.agentId === agentId)
+export function AgentsProvider({ children }: { children: ReactNode }) {
+  const { address } = useAccount()
+  const [state, dispatch] = useReducer(reducer, { agents: [], events: [] })
+
+  // Load from localStorage when wallet connects / changes
+  useEffect(() => {
+    if (!address) {
+      dispatch({ type: 'CLEAR' })
+      return
+    }
+    try {
+      const raw = localStorage.getItem(storageKey(address))
+      if (raw) {
+        const { agents, events } = JSON.parse(raw) as State
+        dispatch({ type: 'LOAD', agents: agents ?? [], events: events ?? [] })
+      } else {
+        dispatch({ type: 'CLEAR' })
+      }
+    } catch {
+      dispatch({ type: 'CLEAR' })
+    }
+  }, [address])
+
+  // Persist to localStorage on every state change
+  useEffect(() => {
+    if (!address) return
+    try {
+      localStorage.setItem(storageKey(address), JSON.stringify(state))
+    } catch {}
+  }, [address, state])
+
+  const eventsFor = (agentId: string) => state.events.filter(e => e.agentId === agentId)
 
   const addEvent = (draft: DraftEvent) => {
     const event: AgentEvent = {
       ...draft,
-      id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      at: new Date().toISOString(),
+      id:  `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      at:  new Date().toISOString(),
     }
     dispatch({ type: 'ADD_EVENT', event })
   }

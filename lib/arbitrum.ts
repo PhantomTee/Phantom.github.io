@@ -22,20 +22,7 @@ export const wagmiConfig = createConfig({
 })
 
 export const TRUST_ENGINE_ABI = [
-  {
-    type: 'function',
-    name: 'computeTrust',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'paymentSuccesses', type: 'uint64' },
-      { name: 'paymentAttempts', type: 'uint64' },
-      { name: 'tasksCompleted', type: 'uint64' },
-      { name: 'overLimitCount', type: 'uint64' },
-      { name: 'guardrailBlocks', type: 'uint64' },
-      { name: 'budgetUtilization', type: 'uint64' },
-    ],
-    outputs: [{ name: 'score', type: 'uint64' }],
-  },
+  // ── View ──────────────────────────────────────────────────────────
   {
     type: 'function',
     name: 'getScore',
@@ -44,11 +31,75 @@ export const TRUST_ENGINE_ABI = [
     outputs: [{ name: 'score', type: 'uint64' }],
   },
   {
+    type: 'function',
+    name: 'computeTrust',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'paymentSuccesses',  type: 'uint64' },
+      { name: 'paymentAttempts',   type: 'uint64' },
+      { name: 'tasksCompleted',    type: 'uint64' },
+      { name: 'overLimitCount',    type: 'uint64' },
+      { name: 'guardrailBlocks',   type: 'uint64' },
+      { name: 'budgetUtilization', type: 'uint64' },
+    ],
+    outputs: [{ name: 'score', type: 'uint64' }],
+  },
+  // ── Write ─────────────────────────────────────────────────────────
+  {
+    type: 'function',
+    name: 'initialize',
+    stateMutability: 'nonpayable',
+    inputs: [],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'setBudget',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'agentId',  type: 'bytes32' },
+      { name: 'budgetFp', type: 'uint64'  },
+    ],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'recordPaymentSuccess',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'agentId',  type: 'bytes32' },
+      { name: 'amountFp', type: 'uint64'  },
+    ],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'recordPaymentFailure',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'agentId', type: 'bytes32' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'recordTaskCompleted',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'agentId', type: 'bytes32' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'recordLimitBlocked',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'agentId', type: 'bytes32' }],
+    outputs: [],
+  },
+  // ── Events ────────────────────────────────────────────────────────
+  {
     type: 'event',
     name: 'TrustUpdated',
     inputs: [
-      { name: 'agentId', type: 'bytes32', indexed: true },
-      { name: 'newScore', type: 'uint64', indexed: false },
+      { name: 'agentId',  type: 'bytes32', indexed: true  },
+      { name: 'newScore', type: 'uint64',  indexed: false },
     ],
   },
 ] as const

@@ -1,103 +1,160 @@
 'use client'
 
 import { useState } from 'react'
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useAgents } from './agents-provider'
+import { STYLUS_CONTRACT_ADDRESS, TRUST_ENGINE_ABI } from '@/lib/arbitrum'
+import { agentIdToBytes32 } from '@/hooks/use-on-chain-score'
 import type { AgentEventKind, SpendCategory } from '@/lib/types'
 
-interface SimulateAction {
-  kind: AgentEventKind
-  label: string
+interface Action {
+  kind:       AgentEventKind
+  label:      string
   description: string
-  color: string
-  amount?: number
-  category?: SpendCategory
+  color:      string
+  amount?:    number
+  category?:  SpendCategory
   trustDelta: number
+  fn:         'recordPaymentSuccess' | 'recordPaymentFailure' | 'recordTaskCompleted' | 'recordLimitBlocked'
 }
 
-const ACTIONS: SimulateAction[] = [
+const ACTIONS: Action[] = [
   {
-    kind: 'payment_success',
-    label: 'Payment settled',
-    description: 'USDC transfer confirmed on Arbitrum',
-    color: 'text-emerald-400 border-emerald-400/30 hover:bg-emerald-400/10',
-    amount: 12,
-    category: 'compute',
-    trustDelta: 0.8,
+    kind: 'payment_success', fn: 'recordPaymentSuccess',
+    label: 'Payment success', description: 'USDC transfer confirmed on Arbitrum',
+    color: 'border-green-400/25 text-green-400/70 hover:border-green-400/50 hover:bg-green-400/5',
+    amount: 12, category: 'compute', trustDelta: 0.8,
   },
   {
-    kind: 'task_completed',
-    label: 'Task completed',
-    description: 'Agent finished assigned work unit',
-    color: 'text-cyan-400 border-cyan-400/30 hover:bg-cyan-400/10',
+    kind: 'task_completed', fn: 'recordTaskCompleted',
+    label: 'Task completed', description: 'Agent finished assigned work unit',
+    color: 'border-white/[0.1] text-white/40 hover:border-white/30 hover:bg-white/[0.03]',
     trustDelta: 1.2,
   },
   {
-    kind: 'payment_failed',
-    label: 'Payment failed',
-    description: 'Transaction reverted on-chain',
-    color: 'text-red-400 border-red-400/30 hover:bg-red-400/10',
-    amount: 10,
-    category: 'data-apis',
-    trustDelta: -2.5,
+    kind: 'payment_failed', fn: 'recordPaymentFailure',
+    label: 'Payment failed', description: 'Transaction reverted on-chain',
+    color: 'border-red-400/25 text-red-400/60 hover:border-red-400/40 hover:bg-red-400/5',
+    amount: 10, category: 'data-apis', trustDelta: -2.5,
   },
   {
-    kind: 'limit_blocked',
-    label: 'Guardrail blocked',
-    description: 'Attempted to exceed per-tx limit',
-    color: 'text-orange-400 border-orange-400/30 hover:bg-orange-400/10',
-    amount: 50,
-    category: 'agent-services',
-    trustDelta: -3.5,
+    kind: 'limit_blocked', fn: 'recordLimitBlocked',
+    label: 'Guardrail blocked', description: 'Exceeded per-tx limit',
+    color: 'border-amber-400/25 text-amber-400/60 hover:border-amber-400/40 hover:bg-amber-400/5',
+    amount: 50, category: 'agent-services', trustDelta: -3.5,
   },
 ]
 
 export function SimulatePanel({ agentId }: { agentId: string }) {
   const { addEvent } = useAgents()
-  const [lastAction, setLastAction] = useState<string | null>(null)
+  const [activeAction, setActiveAction] = useState<Action | null>(null)
 
-  function simulate(action: SimulateAction) {
+  const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash })
+
+  const bytes32Id = agentIdToBytes32(agentId)
+
+  // When confirmed, record in local state too
+  if (isConfirmed && activeAction) {
     addEvent({
       agentId,
-      kind: action.kind,
-      label: `[Simulated] ${action.description}`,
-      amountUsdc: action.amount,
-      category: action.category,
-      trustDelta: action.trustDelta,
-      txHash: action.kind === 'payment_success'
-        ? `0xsim${Date.now().toString(16)}`
-        : undefined,
+      kind:      activeAction.kind,
+      label:     activeAction.description,
+      amountUsdc: activeAction.amount,
+      category:  activeAction.category,
+      trustDelta: activeAction.trustDelta,
+      txHash,
     })
-    setLastAction(action.label)
-    setTimeout(() => setLastAction(null), 2000)
+    setActiveAction(null)
+    reset()
   }
+
+  function fire(action: Action) {
+    if (!STYLUS_CONTRACT_ADDRESS) {
+      // No contract — local only
+      addEvent({
+        agentId,
+        kind:      action.kind,
+        label:     `${action.description} (local)`,
+        amountUsdc: action.amount,
+        category:  action.category,
+        trustDelta: action.trustDelta,
+      })
+      return
+    }
+
+    setActiveAction(action)
+
+    if (action.fn === 'recordPaymentSuccess') {
+      writeContract({
+        address: STYLUS_CONTRACT_ADDRESS,
+        abi: TRUST_ENGINE_ABI,
+        functionName: 'recordPaymentSuccess',
+        args: [bytes32Id, BigInt(Math.round((action.amount ?? 0) * 100))],
+      })
+    } else if (action.fn === 'recordPaymentFailure') {
+      writeContract({ address: STYLUS_CONTRACT_ADDRESS, abi: TRUST_ENGINE_ABI, functionName: 'recordPaymentFailure', args: [bytes32Id] })
+    } else if (action.fn === 'recordTaskCompleted') {
+      writeContract({ address: STYLUS_CONTRACT_ADDRESS, abi: TRUST_ENGINE_ABI, functionName: 'recordTaskCompleted', args: [bytes32Id] })
+    } else if (action.fn === 'recordLimitBlocked') {
+      writeContract({ address: STYLUS_CONTRACT_ADDRESS, abi: TRUST_ENGINE_ABI, functionName: 'recordLimitBlocked', args: [bytes32Id] })
+    }
+  }
+
+  const busy = isPending || isConfirming
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs text-gray-500 uppercase tracking-wider">Simulate events</p>
-        {lastAction && (
-          <span className="text-xs text-green-400 animate-pulse">
-            ✓ {lastAction} recorded
+      <div className="flex items-center justify-between mb-6">
+        <span className="font-mono text-[11px] tracking-[0.26em] text-white/30 uppercase">
+          {STYLUS_CONTRACT_ADDRESS ? 'Record on-chain event' : 'Record event (local)'}
+        </span>
+        {isConfirmed && (
+          <span className="font-mono text-[10px] tracking-[0.12em] text-green-400/70">
+            ✓ confirmed
           </span>
         )}
       </div>
+
       <div className="grid grid-cols-2 gap-2">
         {ACTIONS.map(a => (
           <button
             key={a.kind}
-            onClick={() => simulate(a)}
-            className={`text-left px-3 py-3 rounded-xl border text-xs font-medium transition-all ${a.color}`}
+            onClick={() => fire(a)}
+            disabled={busy}
+            className={`text-left px-4 py-4 border font-mono text-[11px] transition-all disabled:opacity-30 ${a.color}`}
           >
-            <p>{a.label}</p>
-            <p className="opacity-60 mt-0.5 font-normal">
+            <p className="tracking-[0.06em]">{a.label}</p>
+            <p className="opacity-50 mt-1 text-[10px]">
               {a.trustDelta >= 0 ? '+' : ''}{a.trustDelta} trust
             </p>
           </button>
         ))}
       </div>
-      <p className="text-[10px] text-gray-700 mt-2">
-        Events update trust score in real time. No wallet required.
-      </p>
+
+      {/* Status */}
+      <div className="mt-4 min-h-[28px]">
+        {isPending && (
+          <p className="font-mono text-[10px] tracking-[0.12em] text-white/25 animate-pulse">
+            Waiting for wallet signature…
+          </p>
+        )}
+        {isConfirming && txHash && (
+          <p className="font-mono text-[10px] tracking-[0.12em] text-white/25 animate-pulse">
+            Confirming · {txHash.slice(0, 10)}…
+          </p>
+        )}
+        {writeError && (
+          <p className="font-mono text-[10px] text-red-400/60">
+            {writeError.message.slice(0, 80)}
+          </p>
+        )}
+        {!STYLUS_CONTRACT_ADDRESS && (
+          <p className="font-mono text-[10px] tracking-[0.1em] text-white/15">
+            Set NEXT_PUBLIC_STYLUS_CONTRACT to write on-chain
+          </p>
+        )}
+      </div>
     </div>
   )
 }

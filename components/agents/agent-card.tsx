@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { computeTrust } from '@/lib/reputation'
 import { getAutonomyTier } from '@/lib/governance'
+import { useOnChainScore } from '@/hooks/use-on-chain-score'
 import type { Agent, AgentEvent } from '@/lib/types'
 
 interface AgentCardProps {
-  agent: Agent
+  agent:  Agent
   events: AgentEvent[]
 }
 
@@ -24,18 +24,22 @@ const TIER_COLOR: Record<string, string> = {
 }
 
 export function AgentCard({ agent, events }: AgentCardProps) {
-  const trust = computeTrust(events)
-  const tier  = getAutonomyTier(trust.score)
+  const onChain  = useOnChainScore(agent.id)
+  const tier     = getAutonomyTier(onChain.score ?? 79)
+  const tierColor = TIER_COLOR[tier.tier] ?? 'text-white/28'
+
   const spent = events
     .filter(e => e.kind === 'payment_success')
     .reduce((s, e) => s + (e.amountUsdc ?? 0), 0)
   const utilization = agent.authorization.budgetUsdc > 0
     ? Math.min(spent / agent.authorization.budgetUsdc, 1)
     : 0
+
   const paidCount = events.filter(e => e.kind === 'payment_success').length
   const taskCount = events.filter(e => e.kind === 'task_completed').length
   const initials  = agent.avatarSeed.slice(0, 2).toUpperCase()
-  const tierColor = TIER_COLOR[tier.tier] ?? 'text-white/28'
+
+  const displayScore = onChain.status === 'live' ? onChain.score! : 79
 
   return (
     <Link href={`/agents/${agent.id}`}>
@@ -61,9 +65,14 @@ export function AgentCard({ agent, events }: AgentCardProps) {
         </div>
 
         {/* Trust score */}
-        <div className="flex items-baseline gap-2 w-16 flex-shrink-0">
-          <span className="font-display font-light text-white text-[1.6rem] leading-none">{trust.score}</span>
-          <span className="font-mono text-[10px] text-white/22">{trust.grade}</span>
+        <div className="flex items-baseline gap-2 w-20 flex-shrink-0">
+          <span className="font-display font-light text-white text-[1.6rem] leading-none">{displayScore}</span>
+          {onChain.status === 'live'
+            ? <span className="h-1 w-1 rounded-full bg-green-400/60 flex-shrink-0" title="Live from Arbitrum" />
+            : onChain.status === 'loading'
+            ? <span className="h-1 w-1 rounded-full bg-white/20 animate-pulse flex-shrink-0" />
+            : null
+          }
         </div>
 
         {/* Budget bar */}

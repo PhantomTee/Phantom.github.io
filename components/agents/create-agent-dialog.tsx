@@ -1,14 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useAgents } from './agents-provider'
+import { STYLUS_CONTRACT_ADDRESS, TRUST_ENGINE_ABI } from '@/lib/arbitrum'
+import { agentIdToBytes32 } from '@/hooks/use-on-chain-score'
 import { SPEND_CATEGORIES, type SpendCategory } from '@/lib/types'
 import type { Agent } from '@/lib/types'
 
 const MODELS = [
-  { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
-  { id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5' },
-  { id: 'claude-opus-4-8', label: 'Claude Opus 4.8' },
+  { id: 'groq/llama-3.3-70b-versatile',  label: 'Llama 3.3 70B (Groq)'   },
+  { id: 'groq/llama-3.1-8b-instant',     label: 'Llama 3.1 8B (Groq)'    },
+  { id: 'heurist/mistral-7b-instruct',   label: 'Mistral 7B (Heurist)'   },
+  { id: 'heurist/mixtral-8x7b-instruct', label: 'Mixtral 8x7B (Heurist)' },
 ]
 
 interface CreateAgentDialogProps {
@@ -18,143 +22,193 @@ interface CreateAgentDialogProps {
 
 export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
   const { dispatch } = useAgents()
-  const [name, setName] = useState('')
-  const [model, setModel] = useState(MODELS[0].id)
-  const [budget, setBudget] = useState('100')
-  const [perTx, setPerTx] = useState('15')
-  const [network, setNetwork] = useState<'arbitrum-one' | 'arbitrum-sepolia'>('arbitrum-sepolia')
-  const [categories, setCategories] = useState<SpendCategory[]>(['compute'])
-  const [error, setError] = useState('')
 
-  if (!open) return null
+  const [name,       setName]       = useState('')
+  const [model,      setModel]      = useState(MODELS[0].id)
+  const [budget,     setBudget]     = useState('100')
+  const [perTx,      setPerTx]      = useState('15')
+  const [network,    setNetwork]    = useState<'arbitrum-one' | 'arbitrum-sepolia'>('arbitrum-sepolia')
+  const [categories, setCategories] = useState<SpendCategory[]>(['compute'])
+  const [error,      setError]      = useState('')
+  const [pendingAgent, setPendingAgent] = useState<Agent | null>(null)
+
+  const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash })
+
+  // When tx confirms, commit agent to store
+  useEffect(() => {
+    if (!isConfirmed || !pendingAgent) return
+    dispatch({
+      type: 'ADD_AGENT',
+      agent: { ...pendingAgent, onChainScore: 79 },
+    })
+    dispatch({
+      type: 'ADD_EVENT',
+      event: {
+        id:      `${pendingAgent.id}-authorized`,
+        agentId: pendingAgent.id,
+        kind:    'authorized',
+        label:   `${pendingAgent.name} authorized — budget set on Arbitrum`,
+        at:      new Date().toISOString(),
+        txHash,
+        trustDelta: 0,
+      },
+    })
+    setPendingAgent(null)
+    reset()
+    handleClose()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfirmed])
 
   function toggleCategory(cat: SpendCategory) {
-    setCategories(prev =>
-      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
-    )
+    setCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
+  }
+
+  function handleClose() {
+    setName(''); setModel(MODELS[0].id); setBudget('100'); setPerTx('15')
+    setCategories(['compute']); setError(''); setPendingAgent(null); reset()
+    onClose()
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setError('Name is required'); return }
-    if (categories.length === 0) { setError('Select at least one spend category'); return }
+    setError('')
+    if (!name.trim())           { setError('Name is required'); return }
+    if (categories.length === 0){ setError('Select at least one spend category'); return }
     const budgetNum = parseFloat(budget)
-    const perTxNum = parseFloat(perTx)
-    if (isNaN(budgetNum) || budgetNum <= 0) { setError('Budget must be a positive number'); return }
-    if (isNaN(perTxNum) || perTxNum <= 0) { setError('Per-tx limit must be a positive number'); return }
-    if (perTxNum > budgetNum) { setError('Per-tx limit cannot exceed total budget'); return }
+    const perTxNum  = parseFloat(perTx)
+    if (isNaN(budgetNum) || budgetNum <= 0)   { setError('Budget must be a positive number'); return }
+    if (isNaN(perTxNum)  || perTxNum  <= 0)   { setError('Per-tx limit must be a positive number'); return }
+    if (perTxNum > budgetNum)                  { setError('Per-tx limit cannot exceed total budget'); return }
 
-    const id = `agent-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now().toString(36)}`
+    const id    = `agent-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now().toString(36)}`
     const agent: Agent = {
       id,
       name: name.trim(),
       model,
-      avatarSeed: `${id.slice(-6)}`,
+      avatarSeed: id.slice(-6),
       createdAt: new Date().toISOString(),
       status: 'active',
       authorization: {
-        budgetUsdc: budgetNum,
+        budgetUsdc:    budgetNum,
         perTxLimitUsdc: perTxNum,
-        expiresAt: new Date(Date.now() + 365 * 86400000).toISOString(),
+        expiresAt:     new Date(Date.now() + 365 * 86400000).toISOString(),
         categories,
         network,
       },
     }
 
-    dispatch({ type: 'ADD_AGENT', agent })
-    dispatch({
-      type: 'ADD_EVENT',
-      event: {
-        id: `${id}-authorized`,
-        agentId: id,
-        kind: 'authorized',
-        label: `${agent.name} authorized with $${budgetNum} USDC budget`,
-        at: new Date().toISOString(),
-        trustDelta: 0,
-      },
-    })
-
-    setName(''); setModel(MODELS[0].id); setBudget('100'); setPerTx('15')
-    setCategories(['compute']); setError('')
-    onClose()
+    if (STYLUS_CONTRACT_ADDRESS) {
+      setPendingAgent(agent)
+      writeContract({
+        address:      STYLUS_CONTRACT_ADDRESS,
+        abi:          TRUST_ENGINE_ABI,
+        functionName: 'setBudget',
+        args:         [agentIdToBytes32(id), BigInt(Math.round(budgetNum * 100))],
+      })
+    } else {
+      // No contract configured — save locally only
+      dispatch({ type: 'ADD_AGENT', agent })
+      dispatch({
+        type: 'ADD_EVENT',
+        event: {
+          id:      `${id}-authorized`,
+          agentId: id,
+          kind:    'authorized',
+          label:   `${agent.name} authorized with $${budgetNum} USDC budget (local only)`,
+          at:      new Date().toISOString(),
+          trustDelta: 0,
+        },
+      })
+      handleClose()
+    }
   }
+
+  if (!open) return null
+
+  const busy = isPending || isConfirming
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] shadow-2xl">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={!busy ? handleClose : undefined} />
+      <div className="relative w-full max-w-md border border-white/[0.1] bg-[#030a12] shadow-2xl">
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.06]">
           <div>
-            <h2 className="font-bold text-white">Hire New Agent</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Assign budget and permissions on Arbitrum</p>
+            <div className="flex items-center gap-3 mb-1">
+              <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
+              <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 uppercase">New Agent</span>
+            </div>
+            <p className="font-mono text-[11px] text-white/20 tracking-[0.08em]">Budget set on Arbitrum Sepolia</p>
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-white transition-colors text-xl leading-none">×</button>
+          {!busy && (
+            <button onClick={handleClose} className="font-mono text-[18px] text-white/20 hover:text-white/60 transition-colors leading-none">×</button>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6">
+
           {/* Name */}
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5">Agent name</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Agent name</label>
             <input
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Nexus"
-              className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-400/50 transition-colors"
+              disabled={busy}
+              className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white placeholder-white/15 focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
             />
           </div>
 
           {/* Model */}
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5">Model</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Model</label>
             <select
               value={model}
               onChange={e => setModel(e.target.value)}
-              className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-green-400/50 transition-colors"
+              disabled={busy}
+              className="w-full bg-[#030a12] border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
             >
-              {MODELS.map(m => (
-                <option key={m.id} value={m.id}>{m.label}</option>
-              ))}
+              {MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
             </select>
           </div>
 
           {/* Budget + per-tx */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Budget (USDC)</label>
+              <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Budget (USDC)</label>
               <input
-                type="number"
-                min="1"
-                value={budget}
+                type="number" min="1" value={budget}
                 onChange={e => setBudget(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-green-400/50 transition-colors"
+                disabled={busy}
+                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Per-tx limit (USDC)</label>
+              <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Per-tx limit</label>
               <input
-                type="number"
-                min="1"
-                value={perTx}
+                type="number" min="1" value={perTx}
                 onChange={e => setPerTx(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-green-400/50 transition-colors"
+                disabled={busy}
+                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
               />
             </div>
           </div>
 
           {/* Network */}
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5">Network</label>
-            <div className="flex gap-2">
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Network</label>
+            <div className="flex gap-3">
               {(['arbitrum-sepolia', 'arbitrum-one'] as const).map(n => (
                 <button
-                  key={n}
-                  type="button"
+                  key={n} type="button"
                   onClick={() => setNetwork(n)}
-                  className={`flex-1 py-2 text-xs font-medium rounded-lg border transition-all ${
+                  disabled={busy}
+                  className={`flex-1 py-3 font-mono text-[11px] tracking-[0.1em] border transition-all disabled:opacity-40 ${
                     network === n
-                      ? 'border-green-400/50 bg-green-400/10 text-green-400'
-                      : 'border-white/10 text-gray-500 hover:border-white/20'
+                      ? 'border-white/40 text-white'
+                      : 'border-white/[0.07] text-white/25 hover:border-white/20'
                   }`}
                 >
                   {n === 'arbitrum-one' ? 'Arbitrum One' : 'Arbitrum Sepolia'}
@@ -165,41 +219,61 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
           {/* Spend categories */}
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5">Spend categories</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Spend categories</label>
             <div className="grid grid-cols-2 gap-2">
               {SPEND_CATEGORIES.map(cat => (
                 <button
-                  key={cat.id}
-                  type="button"
+                  key={cat.id} type="button"
                   onClick={() => toggleCategory(cat.id)}
-                  className={`text-left px-3 py-2 rounded-lg border text-xs transition-all ${
+                  disabled={busy}
+                  className={`text-left px-4 py-3 border font-mono text-[11px] transition-all disabled:opacity-40 ${
                     categories.includes(cat.id)
-                      ? 'border-green-400/40 bg-green-400/10 text-green-400'
-                      : 'border-white/5 text-gray-500 hover:border-white/15'
+                      ? 'border-white/40 text-white'
+                      : 'border-white/[0.07] text-white/25 hover:border-white/20'
                   }`}
                 >
-                  <p className="font-medium">{cat.label}</p>
-                  <p className="text-[10px] opacity-60 mt-0.5">{cat.hint}</p>
+                  <p className="tracking-[0.06em]">{cat.label}</p>
+                  <p className="text-[10px] opacity-50 mt-0.5 font-normal">{cat.hint}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {/* Errors */}
+          {error && (
+            <p className="font-mono text-[11px] text-red-400/80">{error}</p>
+          )}
+          {writeError && (
+            <p className="font-mono text-[11px] text-red-400/80">
+              Wallet error: {writeError.message.slice(0, 80)}
+            </p>
+          )}
 
-          <div className="flex gap-3 pt-1">
+          {/* Status */}
+          {isPending && (
+            <p className="font-mono text-[11px] text-white/35 animate-pulse tracking-[0.1em]">
+              Waiting for wallet signature…
+            </p>
+          )}
+          {isConfirming && (
+            <p className="font-mono text-[11px] text-white/35 animate-pulse tracking-[0.1em]">
+              Transaction confirming on Arbitrum…
+            </p>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 text-sm text-gray-400 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
+              type="button" onClick={handleClose} disabled={busy}
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-white/30 border border-white/[0.07] hover:border-white/20 transition-all disabled:opacity-30"
             >
               Cancel
             </button>
             <button
-              type="submit"
-              className="flex-1 py-2.5 text-sm font-semibold bg-green-400 hover:bg-green-300 text-black rounded-lg transition-colors"
+              type="submit" disabled={busy}
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-white border border-white/25 hover:border-white/60 transition-all disabled:opacity-30"
             >
-              Hire Agent
+              {busy ? 'Hiring…' : 'Hire Agent'}
             </button>
           </div>
         </form>
