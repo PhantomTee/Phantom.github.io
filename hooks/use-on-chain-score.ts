@@ -23,7 +23,6 @@ export function useOnChainScore(agentId: string) {
   if (isLoading) return { score: null, status: 'loading' as const }
   if (isError || data === undefined) return { score: null, status: 'error' as const }
 
-  // Contract returns score * 1000 (fixed-point), divide to get 0–100
-  const score = Number(data) / 1000
-  return { score: Math.round(score), status: 'live' as const }
+  // Contract returns 0–1000 fixed-point; divide by 10 to get 0–100
+  return { score: Math.round(Number(data) / 10), status: 'live' as const }
 }
