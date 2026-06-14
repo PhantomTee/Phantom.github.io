@@ -47,7 +47,7 @@ npm run dev
 # open http://localhost:3000
 ```
 
-No wallet or env vars required — the app ships with 5 seeded demo agents across all trust grades.
+Connect a wallet on Arbitrum Sepolia to hire agents and record events on-chain.
 
 ## Environment variables
 
@@ -81,7 +81,7 @@ lib/
   types.ts            Domain types (Agent, Authorization, AgentEvent)
   reputation.ts       TypeScript trust engine (mirrors Rust contract)
   governance.ts       Autonomy tiers + budget recommendations
-  seed.ts             5 demo agents: Atlas AAA · Prism A · Vox BBB · Echo BB · Kael B
+  seed.ts             Static params for pre-rendered agent routes
   arbitrum.ts         wagmi config, Stylus ABI, USDC addresses
 
 contracts/
@@ -98,6 +98,3 @@ hooks/
   use-on-chain-score.ts   useReadContract → Stylus getScore()
 ```
 
-## Frontend architecture credit
-
-Frontend graph-state patterns were adapted from open-source Sentinel framework patterns (github.com/Cephei18/base), completely re-engineered with Arbitrum Stylus WASM execution and on-chain trust scoring as the core innovation.

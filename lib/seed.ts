@@ -2,10 +2,10 @@ import type { Agent, AgentEvent } from './types'
 
 export const SEED_AGENTS: Agent[] = [
   {
-    id: 'agent-atlas',
-    name: 'Atlas',
+    id: 'agent-cipher',
+    name: 'Cipher',
     model: 'groq/llama-3.3-70b-versatile',
-    avatarSeed: 'atlas-7a2f',
+    avatarSeed: 'ciph-7a2f',
     createdAt: '2025-10-01T00:00:00Z',
     status: 'active',
     authorization: {
@@ -17,10 +17,10 @@ export const SEED_AGENTS: Agent[] = [
     },
   },
   {
-    id: 'agent-prism',
-    name: 'Prism',
+    id: 'agent-nova',
+    name: 'Nova',
     model: 'groq/llama-3.1-8b-instant',
-    avatarSeed: 'prism-3c8d',
+    avatarSeed: 'nova-3c8d',
     createdAt: '2025-11-15T00:00:00Z',
     status: 'active',
     authorization: {
@@ -32,10 +32,10 @@ export const SEED_AGENTS: Agent[] = [
     },
   },
   {
-    id: 'agent-vox',
-    name: 'Vox',
+    id: 'agent-lyra',
+    name: 'Lyra',
     model: 'heurist/mistral-7b-instruct',
-    avatarSeed: 'vox-9e1b',
+    avatarSeed: 'lyra-9e1b',
     createdAt: '2025-12-01T00:00:00Z',
     status: 'active',
     authorization: {
@@ -47,10 +47,10 @@ export const SEED_AGENTS: Agent[] = [
     },
   },
   {
-    id: 'agent-echo',
-    name: 'Echo',
+    id: 'agent-orion',
+    name: 'Orion',
     model: 'heurist/mistral-7b-instruct',
-    avatarSeed: 'echo-2d5c',
+    avatarSeed: 'orion-2d5c',
     createdAt: '2025-12-10T00:00:00Z',
     status: 'active',
     authorization: {
@@ -62,10 +62,10 @@ export const SEED_AGENTS: Agent[] = [
     },
   },
   {
-    id: 'agent-kael',
-    name: 'Kael',
+    id: 'agent-sage',
+    name: 'Sage',
     model: 'heurist/mistral-7b-instruct',
-    avatarSeed: 'kael-6f3a',
+    avatarSeed: 'sage-6f3a',
     createdAt: '2025-12-20T00:00:00Z',
     status: 'active',
     authorization: {
@@ -82,7 +82,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   // Atlas — 20 events, clean record → AAA ~93
   ...Array.from({ length: 18 }, (_, i) => ({
     id: `atlas-ps-${i}`,
-    agentId: 'agent-atlas',
+    agentId: 'agent-cipher',
     kind: 'payment_success' as const,
     label: `USDC transfer to data provider #${i + 1}`,
     at: new Date(Date.now() - (20 - i) * 86400000).toISOString(),
@@ -93,7 +93,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   })),
   ...Array.from({ length: 6 }, (_, i) => ({
     id: `atlas-tc-${i}`,
-    agentId: 'agent-atlas',
+    agentId: 'agent-cipher',
     kind: 'task_completed' as const,
     label: `Market analysis report #${i + 1}`,
     at: new Date(Date.now() - (18 - i * 3) * 86400000).toISOString(),
@@ -103,7 +103,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   // Prism — 14 events, mostly clean → A ~78
   ...Array.from({ length: 12 }, (_, i) => ({
     id: `prism-ps-${i}`,
-    agentId: 'agent-prism',
+    agentId: 'agent-nova',
     kind: 'payment_success' as const,
     label: `Compute job payment #${i + 1}`,
     at: new Date(Date.now() - (15 - i) * 86400000).toISOString(),
@@ -114,7 +114,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   })),
   {
     id: 'prism-pf-0',
-    agentId: 'agent-prism',
+    agentId: 'agent-nova',
     kind: 'payment_failed',
     label: 'RPC timeout on compute node',
     at: new Date(Date.now() - 5 * 86400000).toISOString(),
@@ -124,7 +124,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   ...Array.from({ length: 4 }, (_, i) => ({
     id: `prism-tc-${i}`,
-    agentId: 'agent-prism',
+    agentId: 'agent-nova',
     kind: 'task_completed' as const,
     label: `Embedding batch #${i + 1}`,
     at: new Date(Date.now() - (10 - i * 2) * 86400000).toISOString(),
@@ -134,7 +134,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   // Vox — 8 events, recently promoted → BBB ~68
   ...Array.from({ length: 6 }, (_, i) => ({
     id: `vox-ps-${i}`,
-    agentId: 'agent-vox',
+    agentId: 'agent-lyra',
     kind: 'payment_success' as const,
     label: `Storage write #${i + 1}`,
     at: new Date(Date.now() - (10 - i) * 86400000).toISOString(),
@@ -145,7 +145,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   })),
   {
     id: 'vox-pf-0',
-    agentId: 'agent-vox',
+    agentId: 'agent-lyra',
     kind: 'payment_failed',
     label: 'Insufficient gas estimate',
     at: new Date(Date.now() - 4 * 86400000).toISOString(),
@@ -155,7 +155,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   {
     id: 'vox-tc-0',
-    agentId: 'agent-vox',
+    agentId: 'agent-lyra',
     kind: 'task_completed',
     label: 'IPFS pinning batch complete',
     at: new Date(Date.now() - 2 * 86400000).toISOString(),
@@ -165,7 +165,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   // Echo — 5 events, rebuilding → BB ~60
   ...Array.from({ length: 3 }, (_, i) => ({
     id: `echo-ps-${i}`,
-    agentId: 'agent-echo',
+    agentId: 'agent-orion',
     kind: 'payment_success' as const,
     label: `LLM inference call #${i + 1}`,
     at: new Date(Date.now() - (8 - i * 2) * 86400000).toISOString(),
@@ -176,7 +176,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   })),
   {
     id: 'echo-pf-0',
-    agentId: 'agent-echo',
+    agentId: 'agent-orion',
     kind: 'payment_failed',
     label: 'Wallet nonce conflict',
     at: new Date(Date.now() - 6 * 86400000).toISOString(),
@@ -186,7 +186,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   {
     id: 'echo-lb-0',
-    agentId: 'agent-echo',
+    agentId: 'agent-orion',
     kind: 'limit_blocked',
     label: 'Exceeded per-tx limit of $10',
     at: new Date(Date.now() - 3 * 86400000).toISOString(),
@@ -198,7 +198,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   // Kael — 4 events, multiple blocks → B ~47
   {
     id: 'kael-ps-0',
-    agentId: 'agent-kael',
+    agentId: 'agent-sage',
     kind: 'payment_success',
     label: 'Oracle query fee',
     at: new Date(Date.now() - 7 * 86400000).toISOString(),
@@ -209,7 +209,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   {
     id: 'kael-pf-0',
-    agentId: 'agent-kael',
+    agentId: 'agent-sage',
     kind: 'payment_failed',
     label: 'Contract revert: unauthorized',
     at: new Date(Date.now() - 5 * 86400000).toISOString(),
@@ -219,7 +219,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   {
     id: 'kael-lb-0',
-    agentId: 'agent-kael',
+    agentId: 'agent-sage',
     kind: 'limit_blocked',
     label: 'Attempted $20 tx (limit: $8)',
     at: new Date(Date.now() - 4 * 86400000).toISOString(),
@@ -229,7 +229,7 @@ export const SEED_EVENTS: AgentEvent[] = [
   },
   {
     id: 'kael-lb-1',
-    agentId: 'agent-kael',
+    agentId: 'agent-sage',
     kind: 'limit_blocked',
     label: 'Attempted $15 tx (limit: $8)',
     at: new Date(Date.now() - 2 * 86400000).toISOString(),
@@ -240,7 +240,7 @@ export const SEED_EVENTS: AgentEvent[] = [
 ]
 
 export const SEED_DELEGATIONS: Array<{ from: string; to: string }> = [
-  { from: 'agent-atlas', to: 'agent-prism' },
-  { from: 'agent-atlas', to: 'agent-vox' },
-  { from: 'agent-prism', to: 'agent-echo' },
+  { from: 'agent-cipher', to: 'agent-nova' },
+  { from: 'agent-cipher', to: 'agent-lyra' },
+  { from: 'agent-nova', to: 'agent-orion' },
 ]
