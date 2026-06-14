@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
 import { useAgents } from './agents-provider'
 import { STYLUS_CONTRACT_ADDRESS, TRUST_ENGINE_ABI } from '@/lib/arbitrum'
 import { agentIdToBytes32 } from '@/hooks/use-on-chain-score'
@@ -32,6 +33,8 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
   const [error,      setError]      = useState('')
   const [pendingAgent, setPendingAgent] = useState<Agent | null>(null)
 
+  const chainId = useChainId()
+  const { switchChainAsync } = useSwitchChain()
   const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash })
 
@@ -61,7 +64,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
     onClose()
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     if (!name.trim())           { setError('Name is required'); return }
@@ -90,6 +93,14 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
     }
 
     if (STYLUS_CONTRACT_ADDRESS) {
+      if (chainId !== arbitrumSepolia.id) {
+        try {
+          await switchChainAsync({ chainId: arbitrumSepolia.id })
+        } catch {
+          setError('Please switch your wallet to Arbitrum Sepolia and try again.')
+          return
+        }
+      }
       setPendingAgent(agent)
       writeContract({
         address:      STYLUS_CONTRACT_ADDRESS,

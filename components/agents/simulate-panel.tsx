@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
 import { useAgents } from './agents-provider'
 import { computeTrust, scoreToGrade, gradeColor } from '@/lib/reputation'
 import { STYLUS_CONTRACT_ADDRESS, TRUST_ENGINE_ABI } from '@/lib/arbitrum'
@@ -50,6 +51,8 @@ export function SimulatePanel({ agentId }: { agentId: string }) {
   const { addEvent, eventsFor } = useAgents()
   const [activeAction, setActiveAction] = useState<Action | null>(null)
 
+  const chainId = useChainId()
+  const { switchChainAsync } = useSwitchChain()
   const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash })
 
@@ -86,7 +89,7 @@ export function SimulatePanel({ agentId }: { agentId: string }) {
     reset()
   }
 
-  function fire(action: Action) {
+  async function fire(action: Action) {
     if (!STYLUS_CONTRACT_ADDRESS) {
       addEvent({
         agentId,
@@ -97,6 +100,14 @@ export function SimulatePanel({ agentId }: { agentId: string }) {
         trustDelta: action.trustDelta,
       })
       return
+    }
+
+    if (chainId !== arbitrumSepolia.id) {
+      try {
+        await switchChainAsync({ chainId: arbitrumSepolia.id })
+      } catch {
+        return
+      }
     }
 
     setActiveAction(action)
