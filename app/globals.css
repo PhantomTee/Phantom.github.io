@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
+/* Dark mode via .dark class on <html> */
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --bg: #ffffff;
+  --fg: #111111;
   --green: #4ade80;
   --blue-accent: #3b6fd4;
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  --bg: #0a0a0a;
+  --fg: #f0f0f0;
 }
 
 @layer base {
@@ -16,9 +25,10 @@
 
   body {
     background: var(--bg);
-    color: #1C2E1E;
+    color: var(--fg);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    transition: background 0.2s, color 0.2s;
   }
 }
 
@@ -26,6 +36,7 @@
 .font-body    { font-family: var(--font-body); }
 
 ::selection { background: #EAECE9; color: #1C2E1E; }
+.dark ::selection { background: #1e2a1e; color: #d4f0d4; }
 
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: transparent; }

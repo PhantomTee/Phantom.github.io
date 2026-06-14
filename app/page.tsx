@@ -24,7 +24,7 @@ function FadeUp({ children, delay = 0, className = '' }: {
 }
 
 function Rule() {
-  return <div className="border-t border-neutral-100 my-0" />
+  return <div className="border-t border-neutral-100 dark:border-neutral-800 my-0" />
 }
 
 function SectionLabel({ text }: { text: string }) {
@@ -39,19 +39,24 @@ function SectionLabel({ text }: { text: string }) {
 const VIDEO_SRC = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260601_110537_3a579fa0-7bbc-4d94-9d25-0e816c7840f5.mp4'
 
 /* ─── Video ───────────────────────────────────────────────────────── */
-function HeroVideo({ className }: { className?: string }) {
+function HeroVideo({ className, mobile = false }: { className?: string; mobile?: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const prevXRef = useRef<number | null>(null)
   const targetTimeRef = useRef(0)
-  const isDesktop = useRef(false)
 
   useEffect(() => {
-    isDesktop.current = window.innerWidth >= 1024
     const video = videoRef.current
     if (!video) return
 
-    // Always autoplay + loop
-    video.play().catch(() => {})
+    if (mobile) {
+      // Mobile: autoplay + loop
+      video.play().catch(() => {})
+      return
+    }
+
+    // Desktop: pause at frame 0, scrub with mouse only
+    video.pause()
+    video.currentTime = 0
 
     function onSeeked() {
       if (!video) return
@@ -59,7 +64,7 @@ function HeroVideo({ className }: { className?: string }) {
     }
 
     function onMouseMove(e: MouseEvent) {
-      if (!video || !isDesktop.current) return
+      if (!video) return
       const prev = prevXRef.current
       if (prev === null) { prevXRef.current = e.clientX; return }
       const delta = e.clientX - prev
@@ -78,14 +83,14 @@ function HeroVideo({ className }: { className?: string }) {
       video.removeEventListener('seeked', onSeeked)
       window.removeEventListener('mousemove', onMouseMove)
     }
-  }, [])
+  }, [mobile])
 
   return (
     <div className={className}>
       <video
         ref={videoRef}
-        autoPlay
-        loop
+        autoPlay={mobile}
+        loop={mobile}
         muted
         playsInline
         preload="auto"
@@ -100,7 +105,7 @@ function HeroVideo({ className }: { className?: string }) {
 /* ─── Page ────────────────────────────────────────────────────────── */
 export default function HomePage() {
   return (
-    <div className="bg-white text-neutral-900">
+    <div className="bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
 
       {/* ══ HERO ════════════════════════════════════════════════════ */}
       <section className="overflow-hidden">
@@ -108,7 +113,7 @@ export default function HomePage() {
         {/* ── Mobile layout ─────────────────────────────── */}
         <div className="lg:hidden">
           <div className="w-full h-[52vw] min-h-[220px] max-h-[340px] overflow-hidden">
-            <HeroVideo className="w-full h-full" />
+            <HeroVideo className="w-full h-full" mobile />
           </div>
           <div className="px-6 pt-10 pb-16">
             <SectionLabel text="AI Worker OS · Arbitrum Stylus" />
@@ -118,7 +123,7 @@ export default function HomePage() {
             >
               Anita
             </h1>
-            <p className="font-mono text-[13px] text-neutral-500 tracking-[0.05em] leading-relaxed mb-10 max-w-sm">
+            <p className="text-[15px] text-neutral-500 leading-relaxed mb-10 max-w-sm">
               Hire AI agents as workforce members. Assign USDC budgets, enforce spend limits, and let on-chain reputation gate their autonomy.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -134,8 +139,8 @@ export default function HomePage() {
 
         {/* ── Desktop layout ────────────────────────────── */}
         <div className="relative hidden lg:flex min-h-screen items-center">
-          <HeroVideo className="absolute inset-y-0 right-0 w-[42%] overflow-hidden pointer-events-none" />
-          <div className="relative z-10 w-[58%] px-14 pt-28 pb-20 max-w-4xl">
+          <HeroVideo className="absolute inset-y-0 right-0 w-[60%] overflow-hidden pointer-events-none" />
+          <div className="relative z-10 w-[40%] px-14 pt-28 pb-20 max-w-2xl">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <SectionLabel text="AI Worker OS · Arbitrum Stylus" />
             </motion.div>
@@ -152,9 +157,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="font-mono text-[13px] text-neutral-500 tracking-[0.05em] leading-relaxed max-w-md mb-12"
+              className="text-[15px] text-neutral-500 leading-relaxed max-w-md mb-12"
             >
-              Hire AI agents as workforce members. Assign USDC budgets, enforce spend limits, and let on-chain reputation gate their autonomy — powered by a Rust contract on Arbitrum Stylus.
+              Hire AI agents as workforce members. Assign USDC budgets, enforce spend limits, and let on-chain reputation gate their autonomy, powered by a Rust contract on Arbitrum Stylus.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -192,7 +197,7 @@ export default function HomePage() {
             <ul className="space-y-6 pt-2 lg:pt-14">
               {[
                 'Agents can overspend with no on-chain guardrails',
-                'No portable trust record — every integration starts blind',
+                'No portable trust record: every integration starts blind',
                 'Quality unverifiable before granting budget access',
                 'Agent-to-agent payments have zero fraud accountability',
                 'Founders have no visibility into autonomous spend patterns',
@@ -201,7 +206,7 @@ export default function HomePage() {
                   <span className="font-mono text-[10px] text-neutral-300 mt-1 flex-shrink-0">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <span className="font-mono text-[13px] text-neutral-600 leading-relaxed tracking-[0.03em]">
+                  <span className="text-[15px] text-neutral-600 leading-relaxed">
                     {item}
                   </span>
                 </li>
@@ -214,7 +219,7 @@ export default function HomePage() {
       <Rule />
 
       {/* ══ THE GOAL ════════════════════════════════════════════════ */}
-      <section className="px-6 lg:px-14 py-24 lg:py-32 bg-neutral-50">
+      <section className="px-6 lg:px-14 py-24 lg:py-32 bg-neutral-50 dark:bg-neutral-900">
         <div className="max-w-7xl mx-auto">
           <FadeUp>
             <SectionLabel text="The Goal" />
@@ -228,7 +233,7 @@ export default function HomePage() {
             </h2>
           </FadeUp>
           <FadeUp delay={0.2} className="mt-10">
-            <p className="font-mono text-[13px] text-neutral-500 tracking-[0.05em] leading-relaxed max-w-2xl">
+            <p className="text-[15px] text-neutral-500 leading-relaxed max-w-2xl">
               The Anita trust engine is a Rust contract on Arbitrum Stylus. It stores per-agent payment counters on-chain and computes a weighted 0–100 score on every read. Any protocol can call <span className="text-neutral-800">getScore(agentId)</span> to gate access, price credit, or verify counterparties.
             </p>
           </FadeUp>
@@ -273,7 +278,7 @@ export default function HomePage() {
               Four steps to a trusted workforce
             </h2>
           </FadeUp>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-100 dark:bg-neutral-800">
             {[
               {
                 n: '01',
@@ -283,7 +288,7 @@ export default function HomePage() {
               {
                 n: '02',
                 title: 'Authorize',
-                body: 'Scope spend to specific categories — compute, data APIs, storage, or agent-to-agent services.',
+                body: 'Scope spend to specific categories: compute, data APIs, storage, or agent-to-agent services.',
               },
               {
                 n: '03',
@@ -297,10 +302,10 @@ export default function HomePage() {
               },
             ].map((step, i) => (
               <FadeUp key={i} delay={i * 0.08}>
-                <div className="bg-white px-8 py-10 h-full">
+                <div className="bg-white dark:bg-neutral-950 px-8 py-10 h-full">
                   <p className="font-mono text-[11px] tracking-[0.26em] text-neutral-300 mb-6">{step.n}</p>
                   <p className="font-display font-light text-neutral-900 text-2xl mb-4">{step.title}</p>
-                  <p className="font-mono text-[12px] text-neutral-500 leading-relaxed tracking-[0.03em]">{step.body}</p>
+                  <p className="text-[15px] text-neutral-500 leading-relaxed">{step.body}</p>
                 </div>
               </FadeUp>
             ))}
@@ -311,7 +316,7 @@ export default function HomePage() {
       <Rule />
 
       {/* ══ THE TRUST ENGINE ════════════════════════════════════════ */}
-      <section className="px-6 lg:px-14 py-24 lg:py-32 bg-neutral-50">
+      <section className="px-6 lg:px-14 py-24 lg:py-32 bg-neutral-50 dark:bg-neutral-900">
         <div className="max-w-7xl mx-auto">
           <FadeUp>
             <SectionLabel text="The Trust Engine" />
@@ -326,7 +331,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Formula */}
             <FadeUp delay={0.1}>
-              <div className="bg-white border border-neutral-100 p-8 font-mono text-[12px] leading-7 text-neutral-500">
+              <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-8 font-mono text-[12px] leading-7 text-neutral-500 dark:text-neutral-400">
                 <p className="text-neutral-300 mb-4 text-[10px] tracking-[0.2em] uppercase">trust_score.rs</p>
                 <p><span className="text-[#4169e1]">fn</span> <span className="text-neutral-800">compute_score</span>(counters: &amp;Counters) {'{'}  </p>
                 <p className="ml-4"><span className="text-[#4169e1]">let</span> reliability  = successes / attempts;</p>
@@ -416,7 +421,7 @@ export default function HomePage() {
               Everything you need to manage<br />an AI workforce
             </h2>
           </FadeUp>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-neutral-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-neutral-100 dark:bg-neutral-800">
             {[
               { label: 'Hire AI agents as workforce members',      status: 'LIVE' },
               { label: 'On-chain trust scoring via Stylus Rust',   status: 'LIVE' },
@@ -432,8 +437,8 @@ export default function HomePage() {
               { label: 'Multi-agent delegation networks',          status: 'SOON' },
             ].map((c, i) => (
               <FadeUp key={i} delay={(i % 4) * 0.04}>
-                <div className="bg-white flex items-center justify-between px-6 py-5 gap-4">
-                  <span className="font-mono text-[12px] text-neutral-600 tracking-[0.03em]">{c.label}</span>
+                <div className="bg-white dark:bg-neutral-950 flex items-center justify-between px-6 py-5 gap-4">
+                  <span className="text-[15px] text-neutral-600">{c.label}</span>
                   <span
                     className={`font-mono text-[9px] tracking-[0.18em] flex-shrink-0 px-2 py-0.5 border ${
                       c.status === 'LIVE'
@@ -467,7 +472,7 @@ export default function HomePage() {
             </h2>
           </FadeUp>
           <FadeUp delay={0.2}>
-            <p className="font-mono text-[13px] text-neutral-400 tracking-[0.05em] mb-12 max-w-lg mx-auto leading-relaxed">
+            <p className="text-[15px] text-neutral-400 mb-12 max-w-lg mx-auto leading-relaxed">
               Connect a wallet on Arbitrum Sepolia to hire agents, assign budgets, and watch trust scores build in real time.
             </p>
           </FadeUp>
