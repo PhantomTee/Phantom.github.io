@@ -10,6 +10,7 @@ import { SpendDonut } from '@/components/agents/spend-donut'
 import { computeTrust } from '@/lib/reputation'
 import { getAutonomyTier } from '@/lib/governance'
 import { useOnChainScore } from '@/hooks/use-on-chain-score'
+import { SEED_AGENTS, SEED_EVENTS } from '@/lib/seed'
 
 const STATUS_COLOR: Record<string, string> = {
   active:  'bg-green-400/70',
@@ -37,9 +38,12 @@ export function AgentPageClient({ id }: { id: string }) {
     )
   }
 
-  if (!agent) return notFound()
+  // Fall back to seed agents for the demo roster (visible without wallet)
+  const seedAgent = SEED_AGENTS.find(a => a.id === id)
+  const resolvedAgent = agent ?? seedAgent
+  if (!resolvedAgent) return notFound()
 
-  const events = eventsFor(agent.id)
+  const events = agent ? eventsFor(agent.id) : SEED_EVENTS.filter(e => e.agentId === id)
   const trust = computeTrust(events)
   const tier = getAutonomyTier(trust.score)
   const tierColor = TIER_COLOR[tier.tier] ?? 'text-neutral-400'
@@ -47,12 +51,12 @@ export function AgentPageClient({ id }: { id: string }) {
   const spent = events
     .filter(e => e.kind === 'payment_success')
     .reduce((s, e) => s + (e.amountUsdc ?? 0), 0)
-  const utilization = agent.authorization.budgetUsdc > 0
-    ? Math.min(spent / agent.authorization.budgetUsdc, 1)
+  const utilization = resolvedAgent.authorization.budgetUsdc > 0
+    ? Math.min(spent / resolvedAgent.authorization.budgetUsdc, 1)
     : 0
 
   const displayScore = onChain.status === 'live' ? onChain.score : trust.score
-  const initials = agent.avatarSeed.slice(0, 2).toUpperCase()
+  const initials = resolvedAgent.avatarSeed.slice(0, 2).toUpperCase()
 
   const paidCount  = events.filter(e => e.kind === 'payment_success').length
   const failCount  = events.filter(e => e.kind === 'payment_failed').length
@@ -82,14 +86,14 @@ export function AgentPageClient({ id }: { id: string }) {
 
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <span className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${STATUS_COLOR[agent.status] ?? 'bg-neutral-300'}`} />
+              <span className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${STATUS_COLOR[resolvedAgent.status] ?? 'bg-neutral-300'}`} />
               <span className="font-mono text-[11px] tracking-[0.08em] text-neutral-400">{initials}</span>
             </div>
             <h1
               className="font-display font-light text-neutral-900 dark:text-white leading-none tracking-tight"
               style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}
             >
-              {agent.name}
+              {resolvedAgent.name}
             </h1>
             <span className={`font-mono text-[11px] tracking-[0.14em] uppercase ${tierColor}`}>
               {tier.label}
@@ -97,7 +101,7 @@ export function AgentPageClient({ id }: { id: string }) {
           </div>
 
           <p className="font-mono text-[11px] text-neutral-400 tracking-[0.1em]">
-            {agent.model} · hired {new Date(agent.createdAt).toLocaleDateString()} · {agent.authorization.network}
+            {resolvedAgent.model} · hired {new Date(resolvedAgent.createdAt).toLocaleDateString()} · {resolvedAgent.authorization.network}
           </p>
         </div>
 
@@ -151,7 +155,7 @@ export function AgentPageClient({ id }: { id: string }) {
       <div className="mb-16 pb-16 border-b border-neutral-100 dark:border-neutral-800">
         <div className="flex justify-between font-mono text-[11px] text-neutral-400 tracking-[0.1em] mb-4">
           <span>Budget utilization</span>
-          <span>${spent.toFixed(0)} / ${agent.authorization.budgetUsdc} USDC</span>
+          <span>${spent.toFixed(0)} / ${resolvedAgent.authorization.budgetUsdc} USDC</span>
         </div>
         <div className="h-px w-full bg-neutral-100 dark:bg-neutral-800 relative">
           <div
@@ -161,9 +165,9 @@ export function AgentPageClient({ id }: { id: string }) {
         </div>
         {/* Burn rate */}
         {(() => {
-          const daysActive = Math.max(1, (Date.now() - new Date(agent.createdAt).getTime()) / 86_400_000)
+          const daysActive = Math.max(1, (Date.now() - new Date(resolvedAgent.createdAt).getTime()) / 86_400_000)
           const dailyBurn = spent / daysActive
-          const remaining = agent.authorization.budgetUsdc - spent
+          const remaining = resolvedAgent.authorization.budgetUsdc - spent
           const daysLeft = dailyBurn > 0 ? remaining / dailyBurn : null
           return (
             <div className="flex flex-wrap gap-6 mt-4 font-mono text-[10px] text-neutral-300 dark:text-neutral-600 tracking-[0.08em]">
@@ -181,9 +185,9 @@ export function AgentPageClient({ id }: { id: string }) {
           )
         })()}
         <div className="flex flex-wrap gap-6 mt-4 font-mono text-[11px] text-neutral-400 tracking-[0.1em]">
-          <span>Per-tx limit: <span className="text-neutral-600 dark:text-neutral-300">${agent.authorization.perTxLimitUsdc}</span></span>
-          <span>Expires: <span className="text-neutral-600 dark:text-neutral-300">{new Date(agent.authorization.expiresAt).toLocaleDateString()}</span></span>
-          <span>Categories: <span className="text-neutral-600 dark:text-neutral-300">{agent.authorization.categories.join(', ')}</span></span>
+          <span>Per-tx limit: <span className="text-neutral-600 dark:text-neutral-300">${resolvedAgent.authorization.perTxLimitUsdc}</span></span>
+          <span>Expires: <span className="text-neutral-600 dark:text-neutral-300">{new Date(resolvedAgent.authorization.expiresAt).toLocaleDateString()}</span></span>
+          <span>Categories: <span className="text-neutral-600 dark:text-neutral-300">{resolvedAgent.authorization.categories.join(', ')}</span></span>
           <span>Confidence: <span className="text-neutral-600 dark:text-neutral-300">{trust.confidence}</span></span>
         </div>
       </div>
@@ -207,7 +211,7 @@ export function AgentPageClient({ id }: { id: string }) {
             <div className="mb-8">
               <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Simulate Event</span>
             </div>
-            <SimulatePanel agentId={agent.id} />
+            <SimulatePanel agentId={resolvedAgent.id} />
           </div>
 
           {/* Spend breakdown */}
