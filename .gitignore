@@ -14,3 +14,7 @@ npm-debug.log*
 
 # Rust
 contracts/target/
+
+# Vercel
+.vercel
+tsconfig.tsbuildinfo
