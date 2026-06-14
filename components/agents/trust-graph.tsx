@@ -68,12 +68,10 @@ export function TrustGraph() {
       nodes.forEach(n => {
         n.vx *= DAMPING
         n.vy *= DAMPING
-        // Center gravity
         n.vx += (W / 2 - n.x) * 0.003
         n.vy += (H / 2 - n.y) * 0.003
       })
 
-      // Repulsion
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[j].x - nodes[i].x
@@ -87,7 +85,6 @@ export function TrustGraph() {
         }
       }
 
-      // Attraction along edges
       edges.forEach(e => {
         const a = nodeMap.get(e.from)
         const b = nodeMap.get(e.to)
@@ -119,11 +116,10 @@ export function TrustGraph() {
         ctx.beginPath()
         ctx.moveTo(a.x, a.y)
         ctx.lineTo(b.x, b.y)
-        ctx.strokeStyle = 'rgba(65,105,225,0.28)'
+        ctx.strokeStyle = 'rgba(65,105,225,0.20)'
         ctx.lineWidth = 1
         ctx.stroke()
 
-        // Arrow
         const angle = Math.atan2(b.y - a.y, b.x - a.x)
         const tip = { x: b.x - Math.cos(angle) * 22, y: b.y - Math.sin(angle) * 22 }
         ctx.beginPath()
@@ -131,7 +127,7 @@ export function TrustGraph() {
         ctx.lineTo(tip.x - Math.cos(angle - 0.4) * 8, tip.y - Math.sin(angle - 0.4) * 8)
         ctx.lineTo(tip.x - Math.cos(angle + 0.4) * 8, tip.y - Math.sin(angle + 0.4) * 8)
         ctx.closePath()
-        ctx.fillStyle = 'rgba(65,105,225,0.55)'
+        ctx.fillStyle = 'rgba(65,105,225,0.40)'
         ctx.fill()
       })
 
@@ -142,31 +138,31 @@ export function TrustGraph() {
 
         // Glow
         const grd = ctx.createRadialGradient(n.x, n.y, r * 0.5, n.x, n.y, r * 2)
-        grd.addColorStop(0, color + '44')
+        grd.addColorStop(0, color + '33')
         grd.addColorStop(1, 'transparent')
         ctx.beginPath()
         ctx.arc(n.x, n.y, r * 2, 0, Math.PI * 2)
         ctx.fillStyle = grd
         ctx.fill()
 
-        // Circle
+        // Circle (white fill for light bg)
         ctx.beginPath()
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = '#030a12'
+        ctx.fillStyle = '#ffffff'
         ctx.fill()
         ctx.strokeStyle = color
         ctx.lineWidth = 1.5
         ctx.stroke()
 
         // Score
-        ctx.fillStyle = 'rgba(255,255,255,0.80)'
+        ctx.fillStyle = 'rgba(0,0,0,0.80)'
         ctx.font = '11px monospace'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(n.score), n.x, n.y)
 
         // Name
-        ctx.fillStyle = 'rgba(255,255,255,0.30)'
+        ctx.fillStyle = 'rgba(0,0,0,0.45)'
         ctx.font = '10px monospace'
         ctx.fillText(n.name, n.x, n.y + r + 14)
       })
@@ -183,6 +179,19 @@ export function TrustGraph() {
     animId = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(animId)
   }, [agents, eventsFor])
+
+  if (agents.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-4 select-none">
+        <p className="font-mono text-[11px] tracking-[0.22em] text-neutral-300 uppercase">
+          // no agents
+        </p>
+        <p className="font-mono text-[11px] text-neutral-200 tracking-[0.1em] text-center max-w-xs leading-relaxed">
+          Hire your first agent from the dashboard to see the trust network appear here.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <canvas

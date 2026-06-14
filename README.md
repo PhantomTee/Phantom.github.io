@@ -1,6 +1,6 @@
 # Anita — AI Worker OS on Arbitrum
 
-> **Arbitrum Open House Hackathon 2025**
+> **Arbitrum Open House Hackathon 2026**
 
 Anita is a protocol for managing autonomous AI agents as workforce members. Founders hire agents, assign USDC budgets, and enforce trust-gated autonomy — powered by an Arbitrum Stylus Rust smart contract that computes reputation scores on-chain.
 

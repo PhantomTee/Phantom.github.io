@@ -39,7 +39,7 @@ export function GovernanceCard({ score, utilization, currentBudget }: Governance
         <p className="mt-2 text-xs text-gray-400">{tier.rationale}</p>
       </div>
 
-      <div className="border-t border-gray-800 pt-4">
+      <div className="border-t border-gray-200 pt-4">
         <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Budget Recommendation</p>
         <div className="flex items-baseline gap-2">
           <span className={`text-lg font-bold ${DIRECTION_COLORS[rec.direction]}`}>

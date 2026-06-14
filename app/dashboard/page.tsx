@@ -8,6 +8,7 @@ import { ActivityFeed } from '@/components/agents/activity-feed'
 import { CreateAgentDialog } from '@/components/agents/create-agent-dialog'
 import { WalletButton } from '@/components/wallet-button'
 import { DemoRoster } from '@/components/agents/demo-roster'
+import { TierNotification } from '@/components/agents/tier-notification'
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount()
@@ -23,19 +24,19 @@ export default function DashboardPage() {
   // ── Not connected — show live demo network ───────────────────────
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-[#030a12] text-white pt-32 pb-32 px-6 lg:px-14">
+      <div className="min-h-screen bg-white text-neutral-900 pt-32 pb-32 px-6 lg:px-14">
         <div className="flex items-start justify-between mb-20">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
-              <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Live Network</span>
+              <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Live Network</span>
             </div>
-            <h1 className="font-display font-light text-white leading-[1.0] tracking-tight" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
+            <h1 className="font-display font-light text-neutral-900 leading-[1.0] tracking-tight" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
               Demo workforce
             </h1>
             <div className="flex items-center gap-3 mt-5">
               <span className="h-1.5 w-1.5 rounded-full bg-green-400/70 flex-shrink-0" />
-              <span className="font-mono text-[11px] tracking-[0.18em] text-white/25 uppercase">
+              <span className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase">
                 Scores live from Arbitrum Sepolia · Connect to manage your own
               </span>
             </div>
@@ -50,27 +51,27 @@ export default function DashboardPage() {
   // ── Connected, no agents ─────────────────────────────────────────
   if (agents.length === 0) {
     return (
-      <div className="min-h-screen bg-[#030a12] text-white flex flex-col items-center justify-center px-6 pt-24">
+      <div className="min-h-screen bg-white text-neutral-900 flex flex-col items-center justify-center px-6 pt-24">
         <div className="flex items-center gap-3 mb-8">
           <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
-          <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Workforce</span>
+          <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Workforce</span>
         </div>
         <h1
-          className="font-display font-light text-white text-center leading-tight tracking-tight mb-6"
+          className="font-display font-light text-neutral-900 text-center leading-tight tracking-tight mb-6"
           style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
         >
           No agents yet
         </h1>
-        <p className="font-mono text-[13px] text-white/30 tracking-[0.08em] text-center max-w-sm mb-10 leading-relaxed">
+        <p className="font-mono text-[13px] text-neutral-400 tracking-[0.08em] text-center max-w-sm mb-10 leading-relaxed">
           Hire your first agent. Budget is set on Arbitrum Sepolia — scores update live from the Trust Engine contract.
         </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="font-mono text-[11px] tracking-[0.22em] uppercase text-white border border-white/25 px-10 py-5 hover:border-white/55 transition-all duration-200"
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-900 border border-neutral-300 px-10 py-5 hover:border-neutral-600 transition-all duration-200"
         >
           + Hire First Agent
         </button>
-        <p className="font-mono text-[10px] text-white/15 tracking-[0.12em] mt-6">
+        <p className="font-mono text-[10px] text-neutral-300 tracking-[0.12em] mt-6">
           {address?.slice(0, 6)}…{address?.slice(-4)}
         </p>
         <CreateAgentDialog open={showCreate} onClose={() => setShowCreate(false)} />
@@ -80,38 +81,38 @@ export default function DashboardPage() {
 
   // ── Dashboard ────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#030a12] text-white pt-32 pb-32 px-6 lg:px-14">
+    <div className="min-h-screen bg-white text-neutral-900 pt-32 pb-32 px-6 lg:px-14">
 
       {/* Header */}
       <div className="flex items-start justify-between mb-20">
         <div>
           <div className="flex items-center gap-3 mb-5">
             <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
-            <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Workforce</span>
+            <span className="font-mono text-[12px] tracking-[0.26em] text-neutral-400 uppercase">Workforce</span>
           </div>
           <h1
-            className="font-display font-light text-white leading-[1.0] tracking-tight"
+            className="font-display font-light text-neutral-900 leading-[1.0] tracking-tight"
             style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
           >
             {activeCount} active agent{activeCount !== 1 ? 's' : ''}
           </h1>
           <div className="flex items-center gap-3 mt-5">
             <span className="h-1.5 w-1.5 rounded-full bg-green-400/70 flex-shrink-0" />
-            <span className="font-mono text-[11px] tracking-[0.18em] text-white/25 uppercase">
+            <span className="font-mono text-[11px] tracking-[0.18em] text-neutral-400 uppercase">
               Trust verified · Arbitrum Sepolia
             </span>
           </div>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="font-mono text-[11px] tracking-[0.22em] uppercase text-white/55 border border-white/20 px-8 py-4 hover:border-white/45 hover:text-white transition-all duration-200"
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-neutral-500 border border-neutral-200 px-8 py-4 hover:border-neutral-400 hover:text-neutral-900 transition-all duration-200"
         >
           + Hire Agent
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 border border-white/[0.07] mb-20">
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-neutral-100 mb-20">
         <StatBox label="Active agents" value={String(activeCount)} />
         <StatBox label="Total agents"  value={String(agents.length)} />
         <StatBox label="Total budget"  value={`$${totalBudget}`} unit="USDC" />
@@ -119,16 +120,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Body */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border-t border-white/[0.06]">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border-t border-neutral-100">
 
         {/* Agents */}
-        <div className="lg:border-r border-white/[0.06] lg:pr-10">
-          <div className="flex items-center justify-between py-7 border-b border-white/[0.06]">
+        <div className="lg:border-r border-neutral-100 lg:pr-10">
+          <div className="flex items-center justify-between py-7 border-b border-neutral-100">
             <div className="flex items-center gap-4">
-              <span className="font-mono text-[11px] tracking-[0.26em] text-white/30 uppercase">Agents</span>
-              <span className="font-mono text-[11px] text-white/15">{agents.length}</span>
+              <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Agents</span>
+              <span className="font-mono text-[11px] text-neutral-300">{agents.length}</span>
             </div>
-            <div className="hidden lg:flex items-center gap-8 font-mono text-[10px] tracking-[0.16em] text-white/18 uppercase">
+            <div className="hidden lg:flex items-center gap-8 font-mono text-[10px] tracking-[0.16em] text-neutral-300 uppercase">
               <span className="w-28">Model</span>
               <span className="w-24">Tier</span>
               <span className="w-20">Score</span>
@@ -141,28 +142,29 @@ export default function DashboardPage() {
 
         {/* Activity */}
         <div className="mt-8 lg:mt-0 lg:pl-10">
-          <div className="py-7 border-b border-white/[0.06]">
-            <span className="font-mono text-[11px] tracking-[0.26em] text-white/30 uppercase">Activity Log</span>
+          <div className="py-7 border-b border-neutral-100">
+            <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">Activity Log</span>
           </div>
           {events.length === 0
-            ? <p className="font-mono text-[11px] text-white/15 py-8 tracking-[0.1em]">// no activity yet</p>
+            ? <p className="font-mono text-[11px] text-neutral-300 py-8 tracking-[0.1em]">// no activity yet</p>
             : <ActivityFeed events={events} limit={30} />
           }
         </div>
       </div>
 
       <CreateAgentDialog open={showCreate} onClose={() => setShowCreate(false)} />
+      <TierNotification />
     </div>
   )
 }
 
 function StatBox({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="px-8 py-8 border-r border-b border-white/[0.07] last:border-r-0">
-      <p className="font-mono text-[10px] tracking-[0.22em] text-white/22 uppercase mb-5">{label}</p>
-      <p className="font-display font-light text-white leading-none" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
+    <div className="px-8 py-8 border-r border-b border-neutral-100 last:border-r-0">
+      <p className="font-mono text-[10px] tracking-[0.22em] text-neutral-400 uppercase mb-5">{label}</p>
+      <p className="font-display font-light text-neutral-900 leading-none" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
         {value}
-        {unit && <span className="font-mono text-[12px] text-white/25 ml-2">{unit}</span>}
+        {unit && <span className="font-mono text-[12px] text-neutral-400 ml-2">{unit}</span>}
       </p>
     </div>
   )

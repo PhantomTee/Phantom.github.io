@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { WalletButton } from './wallet-button'
@@ -7,54 +8,88 @@ import { WalletButton } from './wallet-button'
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/graph',     label: 'Org Graph'  },
+  { href: '/compare',   label: 'Compare'    },
 ]
 
 export function NavBar() {
   const path = usePathname()
+  const [open, setOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#030a12]/90 backdrop-blur-sm">
-      <div className="px-6 lg:px-14 h-20 flex items-center justify-between">
+    <>
+      <header className="fixed top-0 inset-x-0 z-10 px-5 sm:px-8 py-4 sm:py-5 flex flex-row justify-between items-center bg-transparent">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-            <rect x="4" y="4" width="8" height="8" rx="1.5" fill="white" opacity="0.85"/>
-            <rect x="16" y="4" width="8" height="8" rx="1.5" fill="white" opacity="0.18"/>
-            <rect x="4" y="16" width="8" height="8" rx="1.5" fill="white" opacity="0.18"/>
-            <rect x="16" y="16" width="8" height="8" rx="1.5" fill="#4ade80" opacity="0.8"/>
-          </svg>
-          <span className="font-mono text-[13px] tracking-[0.22em] uppercase text-white/70 group-hover:text-white transition-colors">
+        <Link href="/" className="flex items-center gap-2 select-none" onClick={() => setOpen(false)}>
+          <span className="text-[21px] sm:text-[26px] tracking-tight text-black font-medium leading-none">
             Anita
+          </span>
+          <span className="text-[25px] sm:text-[30px] text-black font-medium leading-none tracking-[-0.02em] mb-1">
+            ✱
           </span>
         </Link>
 
-        {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`font-mono text-[11px] tracking-[0.2em] uppercase transition-colors ${
-                path.startsWith(l.href)
-                  ? 'text-white'
-                  : 'text-white/28 hover:text-white/65'
-              }`}
-            >
-              {l.label}
-            </Link>
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center text-[23px] text-black">
+          {NAV_LINKS.map((l, i) => (
+            <span key={l.href} className="flex items-center">
+              {i > 0 && <span className="opacity-40">,&nbsp;</span>}
+              <Link
+                href={l.href}
+                className={`hover:opacity-60 transition-opacity ${path.startsWith(l.href) ? 'opacity-100' : 'opacity-70'}`}
+              >
+                {l.label}
+              </Link>
+            </span>
           ))}
         </nav>
 
-        {/* Wallet — wrapped in monospace style */}
-        <div className="flex items-center gap-4">
-          <span className="hidden lg:block font-mono text-[10px] text-white/15 tracking-[0.15em] select-none">
-            ARBITRUM SEPOLIA
-          </span>
-          <WalletButton />
+        {/* Desktop right: wallet in text style */}
+        <div className="hidden md:flex items-center">
+          <WalletButton textMode />
         </div>
 
+        {/* Mobile: wallet + hamburger */}
+        <div className="flex md:hidden items-center gap-4">
+          <WalletButton />
+          <button
+            onClick={() => setOpen(v => !v)}
+            className="flex flex-col gap-[5px] p-1"
+            aria-label="Toggle menu"
+          >
+            <span
+              className={`w-6 h-[2px] bg-black transition-all duration-300 ${open ? 'rotate-45 translate-y-[7px]' : ''}`}
+            />
+            <span
+              className={`w-6 h-[2px] bg-black transition-all duration-300 ${open ? 'opacity-0' : ''}`}
+            />
+            <span
+              className={`w-6 h-[2px] bg-black transition-all duration-300 ${open ? '-rotate-45 -translate-y-[7px]' : ''}`}
+            />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 z-[9] bg-white/95 backdrop-blur-sm flex flex-col items-start justify-center px-8 gap-8 transition-all duration-300 md:hidden ${
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {NAV_LINKS.map(l => (
+          <Link
+            key={l.href}
+            href={l.href}
+            onClick={() => setOpen(false)}
+            className="text-[32px] font-medium text-black tracking-tight hover:opacity-60 transition-opacity"
+          >
+            {l.label}
+          </Link>
+        ))}
+        <div onClick={() => setOpen(false)}>
+          <WalletButton textMode />
+        </div>
       </div>
-    </header>
+    </>
   )
 }

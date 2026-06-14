@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Inter } from 'next/font/google'
+import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import { AgentsProvider } from '@/components/agents/agents-provider'
 import { Web3Providers } from '@/components/web3-providers'
@@ -12,13 +12,6 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
 })
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  weight: ['300', '400', '500', '600'],
-  display: 'swap',
-})
-
 export const metadata: Metadata = {
   title: 'Anita — AI That Understands, Acts, Learns',
   description:
@@ -27,8 +20,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-[#030a12] text-white antialiased font-body">
+    <html lang="en" className={spaceGrotesk.variable}>
+      <body className="relative bg-white text-neutral-900 font-sans selection:bg-[#EAECE9] selection:text-[#1C2E1E] antialiased overflow-x-hidden flex flex-col lg:block lg:min-h-screen">
         <Web3Providers>
           <AgentsProvider>
             <NavBar />

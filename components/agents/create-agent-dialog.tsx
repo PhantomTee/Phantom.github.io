@@ -35,7 +35,6 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
   const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash })
 
-  // When tx confirms, commit agent to store
   useEffect(() => {
     if (!isConfirmed || !pendingAgent) return
     dispatch({
@@ -107,7 +106,6 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
         args:         [agentIdToBytes32(id), BigInt(Math.round(budgetNum * 100))],
       })
     } else {
-      // No contract configured — save locally only
       dispatch({ type: 'ADD_AGENT', agent })
       dispatch({
         type: 'ADD_EVENT',
@@ -130,20 +128,20 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={!busy ? handleClose : undefined} />
-      <div className="relative w-full max-w-md border border-white/[0.1] bg-[#030a12] shadow-2xl">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={!busy ? handleClose : undefined} />
+      <div className="relative w-full max-w-md border border-neutral-200 bg-white shadow-2xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-neutral-100">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
-              <span className="font-mono text-[11px] tracking-[0.26em] text-white/35 uppercase">New Agent</span>
+              <span className="font-mono text-[11px] tracking-[0.26em] text-neutral-400 uppercase">New Agent</span>
             </div>
-            <p className="font-mono text-[11px] text-white/20 tracking-[0.08em]">Budget set on Arbitrum Sepolia</p>
+            <p className="font-mono text-[11px] text-neutral-300 tracking-[0.08em]">Budget set on Arbitrum Sepolia</p>
           </div>
           {!busy && (
-            <button onClick={handleClose} className="font-mono text-[18px] text-white/20 hover:text-white/60 transition-colors leading-none">×</button>
+            <button onClick={handleClose} className="font-mono text-[18px] text-neutral-300 hover:text-neutral-600 transition-colors leading-none">×</button>
           )}
         </div>
 
@@ -151,24 +149,24 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
           {/* Name */}
           <div>
-            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Agent name</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Agent name</label>
             <input
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Nexus"
               disabled={busy}
-              className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white placeholder-white/15 focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
+              className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 placeholder-neutral-300 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
             />
           </div>
 
           {/* Model */}
           <div>
-            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Model</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Model</label>
             <select
               value={model}
               onChange={e => setModel(e.target.value)}
               disabled={busy}
-              className="w-full bg-[#030a12] border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
+              className="w-full bg-white border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
             >
               {MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
             </select>
@@ -177,28 +175,28 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
           {/* Budget + per-tx */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Budget (USDC)</label>
+              <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Budget (USDC)</label>
               <input
                 type="number" min="1" value={budget}
                 onChange={e => setBudget(e.target.value)}
                 disabled={busy}
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
+                className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
               />
             </div>
             <div>
-              <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Per-tx limit</label>
+              <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Per-tx limit</label>
               <input
                 type="number" min="1" value={perTx}
                 onChange={e => setPerTx(e.target.value)}
                 disabled={busy}
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 font-mono text-[13px] text-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
+                className="w-full bg-transparent border border-neutral-200 px-4 py-3 font-mono text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-400 transition-colors disabled:opacity-40"
               />
             </div>
           </div>
 
           {/* Network */}
           <div>
-            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Network</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Network</label>
             <div className="flex gap-3">
               {(['arbitrum-sepolia', 'arbitrum-one'] as const).map(n => (
                 <button
@@ -207,8 +205,8 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                   disabled={busy}
                   className={`flex-1 py-3 font-mono text-[11px] tracking-[0.1em] border transition-all disabled:opacity-40 ${
                     network === n
-                      ? 'border-white/40 text-white'
-                      : 'border-white/[0.07] text-white/25 hover:border-white/20'
+                      ? 'border-neutral-500 text-neutral-900'
+                      : 'border-neutral-100 text-neutral-400 hover:border-neutral-300'
                   }`}
                 >
                   {n === 'arbitrum-one' ? 'Arbitrum One' : 'Arbitrum Sepolia'}
@@ -219,7 +217,7 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
           {/* Spend categories */}
           <div>
-            <label className="block font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-2">Spend categories</label>
+            <label className="block font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase mb-2">Spend categories</label>
             <div className="grid grid-cols-2 gap-2">
               {SPEND_CATEGORIES.map(cat => (
                 <button
@@ -228,8 +226,8 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
                   disabled={busy}
                   className={`text-left px-4 py-3 border font-mono text-[11px] transition-all disabled:opacity-40 ${
                     categories.includes(cat.id)
-                      ? 'border-white/40 text-white'
-                      : 'border-white/[0.07] text-white/25 hover:border-white/20'
+                      ? 'border-neutral-500 text-neutral-900'
+                      : 'border-neutral-100 text-neutral-400 hover:border-neutral-300'
                   }`}
                 >
                   <p className="tracking-[0.06em]">{cat.label}</p>
@@ -241,22 +239,22 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
 
           {/* Errors */}
           {error && (
-            <p className="font-mono text-[11px] text-red-400/80">{error}</p>
+            <p className="font-mono text-[11px] text-red-500">{error}</p>
           )}
           {writeError && (
-            <p className="font-mono text-[11px] text-red-400/80">
+            <p className="font-mono text-[11px] text-red-500">
               Wallet error: {writeError.message.slice(0, 80)}
             </p>
           )}
 
           {/* Status */}
           {isPending && (
-            <p className="font-mono text-[11px] text-white/35 animate-pulse tracking-[0.1em]">
+            <p className="font-mono text-[11px] text-neutral-400 animate-pulse tracking-[0.1em]">
               Waiting for wallet signature…
             </p>
           )}
           {isConfirming && (
-            <p className="font-mono text-[11px] text-white/35 animate-pulse tracking-[0.1em]">
+            <p className="font-mono text-[11px] text-neutral-400 animate-pulse tracking-[0.1em]">
               Transaction confirming on Arbitrum…
             </p>
           )}
@@ -265,13 +263,13 @@ export function CreateAgentDialog({ open, onClose }: CreateAgentDialogProps) {
           <div className="flex gap-3 pt-2">
             <button
               type="button" onClick={handleClose} disabled={busy}
-              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-white/30 border border-white/[0.07] hover:border-white/20 transition-all disabled:opacity-30"
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-400 border border-neutral-100 hover:border-neutral-300 transition-all disabled:opacity-30"
             >
               Cancel
             </button>
             <button
               type="submit" disabled={busy}
-              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-white border border-white/25 hover:border-white/60 transition-all disabled:opacity-30"
+              className="flex-1 py-4 font-mono text-[11px] tracking-[0.18em] uppercase text-neutral-900 border border-neutral-300 hover:border-neutral-600 transition-all disabled:opacity-30"
             >
               {busy ? 'Hiring…' : 'Hire Agent'}
             </button>

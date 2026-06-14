@@ -25,7 +25,7 @@ export function TrustScoreRing({ score, grade, size = 120, strokeWidth = 10 }: T
           cy={cy}
           r={radius}
           fill="none"
-          stroke="#1f2937"
+          stroke="#f3f4f6"
           strokeWidth={strokeWidth}
         />
         <circle
@@ -42,7 +42,7 @@ export function TrustScoreRing({ score, grade, size = 120, strokeWidth = 10 }: T
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-2xl font-bold text-white leading-none">{score}</span>
+        <span className="text-2xl font-bold text-neutral-900 leading-none">{score}</span>
         <span className="text-xs font-semibold mt-0.5" style={{ color }}>
           {grade}
         </span>

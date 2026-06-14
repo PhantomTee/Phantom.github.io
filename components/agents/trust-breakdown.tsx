@@ -33,7 +33,7 @@ export function TrustBreakdown({ factors }: TrustBreakdownProps) {
               <span>{label}</span>
               <span className="text-gray-500">{weight} weight · <span style={{ color }}>{pct}%</span></span>
             </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{ width: `${pct}%`, backgroundColor: color }}
