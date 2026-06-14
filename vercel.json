@@ -1,0 +1,5 @@
+{
+  "name": "anita-app",
+  "buildCommand": "next build",
+  "framework": "nextjs"
+}
