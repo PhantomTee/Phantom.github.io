@@ -8,4 +8,5 @@ endpoint = "https://sepolia-rollup.arbitrum.io/rpc"
 [contract.deployments.sepolia]
 network = "arbitrum-sepolia"
 no_activate = false
-deployer_address = "0x9C2174334b13277E1d73cbfFDf52379aD6EbdB1F"
+deployer_address = "0xc53793f6DA28138799A845E3867597BbC320B90E"
+contract_address = "0x9cbcadd71ed6791dead4a78450df92e187bc4540"

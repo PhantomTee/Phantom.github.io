@@ -40,6 +40,9 @@ jobs:
       - name: Install cargo-stylus
         run: cargo install cargo-stylus
 
+      - name: Pin ruint to avoid alloy version conflict
+        run: cargo update ruint --precise 1.12.3
+
       - name: Check contract
         run: cargo stylus check --endpoint https://sepolia-rollup.arbitrum.io/rpc
 
