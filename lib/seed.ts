@@ -4,7 +4,7 @@ export const SEED_AGENTS: Agent[] = [
   {
     id: 'agent-atlas',
     name: 'Atlas',
-    model: 'claude-sonnet-4-6',
+    model: 'groq/llama-3.3-70b-versatile',
     avatarSeed: 'atlas-7a2f',
     createdAt: '2025-10-01T00:00:00Z',
     status: 'active',
@@ -19,7 +19,7 @@ export const SEED_AGENTS: Agent[] = [
   {
     id: 'agent-prism',
     name: 'Prism',
-    model: 'claude-sonnet-4-6',
+    model: 'groq/llama-3.1-8b-instant',
     avatarSeed: 'prism-3c8d',
     createdAt: '2025-11-15T00:00:00Z',
     status: 'active',
@@ -34,7 +34,7 @@ export const SEED_AGENTS: Agent[] = [
   {
     id: 'agent-vox',
     name: 'Vox',
-    model: 'claude-haiku-4-5-20251001',
+    model: 'heurist/mistral-7b-instruct',
     avatarSeed: 'vox-9e1b',
     createdAt: '2025-12-01T00:00:00Z',
     status: 'active',
@@ -49,7 +49,7 @@ export const SEED_AGENTS: Agent[] = [
   {
     id: 'agent-echo',
     name: 'Echo',
-    model: 'claude-haiku-4-5-20251001',
+    model: 'heurist/mistral-7b-instruct',
     avatarSeed: 'echo-2d5c',
     createdAt: '2025-12-10T00:00:00Z',
     status: 'active',
@@ -64,7 +64,7 @@ export const SEED_AGENTS: Agent[] = [
   {
     id: 'agent-kael',
     name: 'Kael',
-    model: 'claude-haiku-4-5-20251001',
+    model: 'heurist/mistral-7b-instruct',
     avatarSeed: 'kael-6f3a',
     createdAt: '2025-12-20T00:00:00Z',
     status: 'active',

@@ -1,0 +1,58 @@
+name: Deploy Trust Engine (Arbitrum Sepolia)
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network to deploy to'
+        required: true
+        default: 'arbitrum-sepolia'
+        type: choice
+        options:
+          - arbitrum-sepolia
+          - arbitrum-one
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust + wasm target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.96.0'
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            contracts/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('contracts/Cargo.lock') }}
+
+      - name: Install cargo-stylus
+        run: cargo install cargo-stylus
+
+      - name: Check contract
+        run: cargo stylus check --endpoint https://sepolia-rollup.arbitrum.io/rpc
+
+      - name: Deploy to Arbitrum Sepolia
+        if: ${{ github.event.inputs.network == 'arbitrum-sepolia' }}
+        run: |
+          cargo stylus deploy \
+            --endpoint https://sepolia-rollup.arbitrum.io/rpc \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+
+      - name: Deploy to Arbitrum One
+        if: ${{ github.event.inputs.network == 'arbitrum-one' }}
+        run: |
+          cargo stylus deploy \
+            --endpoint https://arb1.arbitrum.io/rpc \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }}

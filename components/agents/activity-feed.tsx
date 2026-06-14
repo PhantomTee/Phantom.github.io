@@ -7,47 +7,59 @@ interface ActivityFeedProps {
   limit?: number
 }
 
-const KIND_STYLES: Record<string, { dot: string; label: string }> = {
-  payment_success: { dot: 'bg-emerald-400', label: 'Payment settled' },
-  payment_failed: { dot: 'bg-red-400', label: 'Payment failed' },
-  task_completed: { dot: 'bg-cyan-400', label: 'Task complete' },
-  limit_blocked: { dot: 'bg-orange-400', label: 'Guardrail blocked' },
-  authorized: { dot: 'bg-purple-400', label: 'Authorized' },
+const KIND_META: Record<string, { prefix: string; color: string }> = {
+  payment_success: { prefix: '+', color: 'text-green-400/60' },
+  payment_failed:  { prefix: '!', color: 'text-red-400/60'   },
+  task_completed:  { prefix: '✓', color: 'text-white/40'     },
+  limit_blocked:   { prefix: '⊘', color: 'text-amber-400/60' },
+  authorized:      { prefix: '→', color: 'text-white/30'     },
 }
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
   const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 60) return `${mins}m`
   const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
+  if (hrs < 24) return `${hrs}h`
+  return `${Math.floor(hrs / 24)}d`
 }
 
 export function ActivityFeed({ events, limit = 20 }: ActivityFeedProps) {
   const visible = events.slice(0, limit)
 
   if (visible.length === 0) {
-    return <p className="text-sm text-gray-500 py-4">No activity yet.</p>
+    return (
+      <p className="font-mono text-[11px] text-white/18 py-8 tracking-[0.1em]">
+        // no activity yet
+      </p>
+    )
   }
 
   return (
-    <div className="space-y-2">
+    <div>
       {visible.map(e => {
-        const style = KIND_STYLES[e.kind] ?? { dot: 'bg-gray-400', label: e.kind }
+        const meta = KIND_META[e.kind] ?? { prefix: '>', color: 'text-white/25' }
         return (
-          <div key={e.id} className="flex items-start gap-3 py-1.5">
-            <span className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${style.dot}`} />
+          <div key={e.id} className="flex items-start gap-3 py-4 border-b border-white/[0.04]">
+            <span className={`font-mono text-[11px] mt-0.5 flex-shrink-0 w-3 ${meta.color}`}>
+              {meta.prefix}
+            </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-gray-200 truncate">{e.label}</p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-gray-500">{relativeTime(e.at)}</span>
+              <p className="font-mono text-[11px] text-white/45 truncate tracking-[0.04em] leading-snug">
+                {e.label}
+              </p>
+              <div className="flex items-center gap-3 mt-1.5">
+                <span className="font-mono text-[10px] text-white/18">{relativeTime(e.at)}</span>
                 {e.amountUsdc != null && (
-                  <span className="text-xs text-gray-400">${e.amountUsdc.toFixed(2)} USDC</span>
+                  <span className="font-mono text-[10px] text-white/28">
+                    ${e.amountUsdc.toFixed(2)} USDC
+                  </span>
                 )}
                 {e.trustDelta != null && (
                   <span
-                    className={`text-xs font-medium ${e.trustDelta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
+                    className={`font-mono text-[10px] ${
+                      e.trustDelta >= 0 ? 'text-green-400/55' : 'text-red-400/55'
+                    }`}
                   >
                     {e.trustDelta >= 0 ? '+' : ''}{e.trustDelta.toFixed(1)} trust
                   </span>

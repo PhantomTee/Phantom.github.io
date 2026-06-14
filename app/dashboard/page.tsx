@@ -24,54 +24,73 @@ export default function DashboardPage() {
   const activeCount = agents.filter(a => a.status === 'active').length
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 pt-20">
-      <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-[#030a12] text-white pt-32 pb-32 px-6 lg:px-14">
+
+      {/* Header */}
+      <div className="flex items-start justify-between mb-20">
         <div>
-          <h1 className="text-2xl font-bold text-white">Workforce Dashboard</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {activeCount} active Anita agents on Arbitrum
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full px-3 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            Trust verified · Arbitrum Stylus
+          <div className="flex items-center gap-3 mb-5">
+            <span style={{ color: '#4169e1' }} className="text-[13px] leading-none select-none">■</span>
+            <span className="font-mono text-[12px] tracking-[0.26em] text-white/35 uppercase">Workforce</span>
           </div>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 bg-green-400 hover:bg-green-300 text-black font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+          <h1
+            className="font-display font-light text-white leading-[1.0] tracking-tight"
+            style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Hire Agent
-          </button>
+            {activeCount} active agent{activeCount !== 1 ? 's' : ''}
+          </h1>
+          <div className="flex items-center gap-3 mt-5">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-400/70 pulse-dot flex-shrink-0" />
+            <span className="font-mono text-[11px] tracking-[0.18em] text-white/25 uppercase">
+              Trust verified · Arbitrum Stylus
+            </span>
+          </div>
         </div>
+
+        <button
+          onClick={() => setShowCreate(true)}
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-white/55 border border-white/20 px-8 py-4 hover:border-white/45 hover:text-white transition-all duration-200"
+        >
+          + Hire Agent
+        </button>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Active agents" value={String(activeCount)} />
-        <StatCard label="Avg trust score" value={String(avgScore)} />
-        <StatCard label="Total budget" value={`$${totalBudget}`} unit="USDC" />
-        <StatCard label="Total spent" value={`$${totalSpent.toFixed(0)}`} unit="USDC" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-white/[0.07] mb-20">
+        <StatBox label="Active agents"  value={String(activeCount)} />
+        <StatBox label="Avg trust score" value={String(avgScore)} />
+        <StatBox label="Total budget"   value={`$${totalBudget}`} unit="USDC" />
+        <StatBox label="Total spent"    value={`$${totalSpent.toFixed(0)}`} unit="USDC" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            Agents
-          </h2>
+      {/* Body */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] border-t border-white/[0.06]">
+
+        {/* Agents list */}
+        <div className="lg:border-r border-white/[0.06] lg:pr-10">
+          <div className="flex items-center justify-between py-7 border-b border-white/[0.06]">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[11px] tracking-[0.26em] text-white/30 uppercase">Agents</span>
+              <span className="font-mono text-[11px] text-white/15">{agents.length}</span>
+            </div>
+            {/* Column headers */}
+            <div className="hidden lg:flex items-center gap-8 font-mono text-[10px] tracking-[0.16em] text-white/18 uppercase">
+              <span className="w-28">Model</span>
+              <span className="w-24">Tier</span>
+              <span className="w-10 text-right">Score</span>
+              <span className="w-36">Budget</span>
+              <span>Activity</span>
+            </div>
+          </div>
           <AgentRoster />
         </div>
 
-        <div>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            Global Activity
-          </h2>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-            <ActivityFeed events={events} limit={30} />
+        {/* Activity feed */}
+        <div className="mt-8 lg:mt-0 lg:pl-10">
+          <div className="py-7 border-b border-white/[0.06]">
+            <span className="font-mono text-[11px] tracking-[0.26em] text-white/30 uppercase">Activity Log</span>
           </div>
+          <ActivityFeed events={events} limit={30} />
         </div>
       </div>
 
@@ -80,13 +99,13 @@ export default function DashboardPage() {
   )
 }
 
-function StatCard({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function StatBox({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-xl font-bold text-white">
+    <div className="px-8 py-8 border-r border-b border-white/[0.07] last:border-r-0">
+      <p className="font-mono text-[10px] tracking-[0.22em] text-white/22 uppercase mb-5">{label}</p>
+      <p className="font-display font-light text-white leading-none" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
         {value}
-        {unit && <span className="text-sm text-gray-500 ml-1">{unit}</span>}
+        {unit && <span className="font-mono text-[12px] text-white/25 ml-2">{unit}</span>}
       </p>
     </div>
   )

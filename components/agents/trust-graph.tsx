@@ -119,8 +119,8 @@ export function TrustGraph() {
         ctx.beginPath()
         ctx.moveTo(a.x, a.y)
         ctx.lineTo(b.x, b.y)
-        ctx.strokeStyle = 'rgba(99,102,241,0.35)'
-        ctx.lineWidth = 1.5
+        ctx.strokeStyle = 'rgba(65,105,225,0.28)'
+        ctx.lineWidth = 1
         ctx.stroke()
 
         // Arrow
@@ -131,7 +131,7 @@ export function TrustGraph() {
         ctx.lineTo(tip.x - Math.cos(angle - 0.4) * 8, tip.y - Math.sin(angle - 0.4) * 8)
         ctx.lineTo(tip.x - Math.cos(angle + 0.4) * 8, tip.y - Math.sin(angle + 0.4) * 8)
         ctx.closePath()
-        ctx.fillStyle = 'rgba(99,102,241,0.6)'
+        ctx.fillStyle = 'rgba(65,105,225,0.55)'
         ctx.fill()
       })
 
@@ -152,23 +152,23 @@ export function TrustGraph() {
         // Circle
         ctx.beginPath()
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = '#111827'
+        ctx.fillStyle = '#030a12'
         ctx.fill()
         ctx.strokeStyle = color
-        ctx.lineWidth = 2
+        ctx.lineWidth = 1.5
         ctx.stroke()
 
         // Score
-        ctx.fillStyle = '#fff'
-        ctx.font = 'bold 11px monospace'
+        ctx.fillStyle = 'rgba(255,255,255,0.80)'
+        ctx.font = '11px monospace'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(n.score), n.x, n.y)
 
         // Name
-        ctx.fillStyle = '#9ca3af'
-        ctx.font = '11px sans-serif'
-        ctx.fillText(n.name, n.x, n.y + r + 12)
+        ctx.fillStyle = 'rgba(255,255,255,0.30)'
+        ctx.font = '10px monospace'
+        ctx.fillText(n.name, n.x, n.y + r + 14)
       })
     }
 

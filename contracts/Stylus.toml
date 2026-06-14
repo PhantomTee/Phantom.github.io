@@ -1,0 +1,11 @@
+[workspace]
+
+[workspace.networks.arbitrum-sepolia]
+endpoint = "https://sepolia-rollup.arbitrum.io/rpc"
+
+[contract]
+
+[contract.deployments.sepolia]
+network = "arbitrum-sepolia"
+no_activate = false
+deployer_address = "0x9C2174334b13277E1d73cbfFDf52379aD6EbdB1F"
