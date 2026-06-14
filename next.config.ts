@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   images: { unoptimized: true },
+  turbopack: {},
   webpack(config) {
-    // Suppress optional peer dep warnings from MetaMask SDK + WalletConnect
     config.resolve.fallback = {
       ...config.resolve.fallback,
       'pino-pretty': false,
